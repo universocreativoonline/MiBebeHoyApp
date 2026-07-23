@@ -1,0 +1,39 @@
+MI BEBÉ HOY — Proyecto completo (versión final: 4 tarjetas semanales)
+=====================================================================
+
+ARCHIVOS DEL PROYECTO (estos 4 son TODO el proyecto):
+
+  index.html            → La aplicación completa. Contiene TODO el HTML,
+                          TODO el CSS (en <style>) y TODO el JavaScript
+                          (en <script>), incluidas las 52 semanas de
+                          contenido. NO existen archivos app.js, home.js,
+                          screens.js, activities.js ni momTips.js: toda
+                          la lógica vive dentro de este archivo.
+  manifest.webmanifest  → Configuración de la app instalable (PWA).
+  sw.js                 → Service Worker (caché v5: fuerza la
+                          actualización y expulsa versiones viejas).
+  bebe.png.png          → El logo del bebé.
+
+CÓMO INSTALARLO EN GITHUB (importante seguirlo tal cual):
+
+  1. En tu repositorio, BORRA los archivos y carpetas viejos si existen:
+     cualquier carpeta css/, js/, img/ u otros .js sueltos de versiones
+     anteriores. No deben quedar restos.
+  2. Sube estos 4 archivos a la RAÍZ del repositorio, reemplazando los
+     existentes (index.html, manifest.webmanifest, sw.js, bebe.png.png).
+  3. Espera 1-2 minutos a que GitHub Pages publique.
+  4. En el celular: cierra por completo la app o pestaña y ábrela de
+     nuevo (puede necesitar dos aperturas para que el Service Worker
+     nuevo tome control). Para comprobar al instante, abre la URL en
+     una ventana de incógnito.
+
+LA APP MUESTRA (Home de 4 tarjetas, según la edad exacta del bebé):
+  1. 🌱 Esta semana con tu bebé  (+ anticipo de la próxima semana)
+  2. 🎈 Haz esto esta semana
+  3. 💜 Para ti, mamá
+  4. 💡 ¿Sabías que...?
+
+ELIMINADO POR COMPLETO: vacunas, hitos, "¿Es normal?", motivacionales,
+registros, historial y navegación antigua.
+
+Clave de acceso: MiBebeDuerme2026

@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Mi Bebé Hoy</title>
+  <meta name="description" content="Tu guía diaria de acompañamiento durante el primer año de tu bebé.">
+  <meta name="theme-color" content="#FFF6EF">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" href="bebe.png.png">
+  <link rel="apple-touch-icon" href="bebe.png.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Mi Bebé Hoy">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+/* ============================================================
+   Mi Bebé Hoy · Guía de acompañamiento diario
+   Paleta pastel del logo: crema, rosa, celeste, amarillo, verde.
+   ============================================================ */
+:root {
+  --crema: #FFF6EF;
+  --blanco: #FFFFFF;
+  --rosa: #F9D3DE;
+  --rosa-fuerte: #EE8FA4;
+  --celeste: #C6E6F5;
+  --celeste-fuerte: #7FBEDC;
+  --amarillo: #FBE9B8;
+  --amarillo-fuerte: #E9C46A;
+  --verde: #D4EDC4;
+  --verde-fuerte: #8CC63F;
+  --lila: #E5DDF6;
+  --tinta: #5B4A42;
+  --tinta-suave: #8A776D;
+  --sombra: 0 6px 18px rgba(91, 74, 66, 0.10);
+  --radio: 22px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+/* Candado visual: cualquier elemento con [hidden] queda SIEMPRE en display:none,
+   sin importar qué otras reglas CSS existan. */
+[hidden] { display: none !important; }
+/* Doble candado: mientras el body tenga la clase .locked, la app completa
+   (contenido, fondo y cualquier menú) es invisible e inaccesible. */
+body.locked #app { display: none !important; }
+html, body { height: 100%; }
+body {
+  font-family: 'Nunito', -apple-system, system-ui, sans-serif;
+  background: var(--crema); color: var(--tinta); line-height: 1.55;
+}
+h1, h2, h3, .lock-title { font-family: 'Quicksand', 'Nunito', sans-serif; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+input, textarea { font-family: inherit; font-size: 1rem; color: var(--tinta); }
+
+/* ---------- Pantallas de acceso y bienvenida ---------- */
+.lockscreen {
+  min-height: 100dvh; display: flex; align-items: center; justify-content: center;
+  padding: 32px 24px calc(32px + env(safe-area-inset-bottom));
+  background:
+    radial-gradient(circle at 15% 20%, rgba(198,230,245,.55), transparent 45%),
+    radial-gradient(circle at 85% 15%, rgba(251,233,184,.55), transparent 45%),
+    radial-gradient(circle at 50% 95%, rgba(249,211,222,.65), transparent 55%),
+    var(--crema);
+}
+.lock-inner { width: 100%; max-width: 360px; text-align: center; }
+.lock-logo-wrap { position: relative; display: inline-block; margin-bottom: 8px; }
+.lock-logo { width: 180px; height: 180px; border-radius: 44px; box-shadow: var(--sombra); animation: float 4s ease-in-out infinite; }
+.lock-logo-sm { width: 110px; height: 110px; border-radius: 28px; margin-bottom: 10px; }
+@keyframes float { 0%,100% { transform: translateY(0);} 50% { transform: translateY(-8px);} }
+.sparkle { position: absolute; color: var(--amarillo-fuerte); font-size: 1rem; animation: twinkle 2.6s ease-in-out infinite; opacity: .8; }
+.s1 { top: -6px; right: -14px; } .s2 { bottom: 10px; left: -18px; animation-delay: .8s; color: var(--celeste-fuerte); }
+.s3 { top: 40%; right: -26px; animation-delay: 1.6s; color: var(--rosa-fuerte); }
+@keyframes twinkle { 0%,100% { opacity:.25; transform: scale(.8);} 50% { opacity:1; transform: scale(1.15);} }
+@media (prefers-reduced-motion: reduce) { .lock-logo, .sparkle { animation: none !important; } }
+.lock-title { font-size: 1.9rem; font-weight: 700; margin: 8px 0 4px; }
+.lock-sub { color: var(--tinta-suave); margin-bottom: 24px; }
+.lock-hint { font-size: .85rem; color: var(--tinta-suave); margin: 8px 0 4px; }
+.lock-error { color: #C0564F; font-size: .9rem; margin: 8px 0; font-weight: 600; }
+
+.btn { display: block; width: 100%; padding: 14px 18px; border-radius: 999px; font-size: 1.05rem; font-weight: 700; transition: transform .12s ease; }
+.btn:active { transform: scale(.97); }
+.btn:focus-visible, .mes-b:focus-visible { outline: 3px solid var(--celeste-fuerte); outline-offset: 2px; }
+.btn-primary { background: linear-gradient(135deg, var(--rosa-fuerte), #F5A8BB); color: #fff; box-shadow: 0 8px 20px rgba(238,143,164,.40); }
+.btn-big { padding: 16px; font-size: 1.12rem; }
+.btn-ghost { color: var(--tinta-suave); margin-top: 10px; font-weight: 600; }
+.btn-soft { background: var(--celeste); color: var(--tinta); box-shadow: var(--sombra); }
+.btn-danger-soft { background: #F6DDDA; color: #A34A43; margin-top: 12px; }
+.btn + .btn { margin-top: 10px; }
+.input { width: 100%; padding: 13px 16px; border-radius: 16px; border: 2px solid var(--rosa); background: var(--blanco); margin: 6px 0 14px; outline: none; }
+.input:focus { border-color: var(--rosa-fuerte); }
+.input-center { text-align: center; }
+.field-label { display: block; font-weight: 700; font-size: .92rem; text-align: left; }
+.lock-inner .field-label { text-align: center; margin-top: 6px; }
+textarea.input { resize: vertical; min-height: 64px; }
+
+/* ---------- App ---------- */
+.topbar {
+  position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 12px;
+  padding: calc(10px + env(safe-area-inset-top)) 18px 10px;
+  background: rgba(255,246,239,.92); backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(91,74,66,.07);
+}
+.topbar-logo { width: 42px; height: 42px; border-radius: 12px; }
+.topbar-text { flex: 1; display: flex; flex-direction: column; }
+.topbar-name { font-weight: 800; font-size: 1.05rem; }
+.topbar-age { font-size: .82rem; color: var(--tinta-suave); }
+.gear { font-size: 1.3rem; padding: 6px 8px; border-radius: 12px; }
+.gear:active { background: var(--rosa); }
+
+#main { max-width: 520px; margin: 0 auto; padding: 18px 18px calc(28px + env(safe-area-inset-bottom)); }
+
+.card { background: var(--blanco); border-radius: var(--radio); padding: 20px; box-shadow: var(--sombra); margin-bottom: 16px; }
+.eyebrow { font-size: .76rem; font-weight: 800; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 4px; }
+.card h3 { font-size: 1.18rem; font-weight: 700; margin-bottom: 8px; }
+.card p { font-size: .95rem; color: var(--tinta-suave); }
+
+/* Hero saludo */
+.card-hero {
+  background: linear-gradient(135deg, var(--celeste) 0%, var(--rosa) 100%);
+  box-shadow: 0 10px 24px rgba(127,190,220,.25); text-align: center; padding: 26px 20px;
+}
+.hero-greet { font-family: 'Quicksand', sans-serif; font-size: 1.45rem; font-weight: 700; color: var(--tinta); }
+.hero-age { font-size: 1rem; color: var(--tinta); margin-top: 4px; font-weight: 700; }
+.hero-age span { background: rgba(255,255,255,.6); padding: 4px 12px; border-radius: 999px; display: inline-block; margin-top: 6px; }
+
+.hero-week { margin-top: 10px; font-size: .85rem; font-weight: 800; color: var(--tinta); background: rgba(255,255,255,.55); display: inline-block; padding: 5px 14px; border-radius: 999px; }
+.card-body-text { font-size: .95rem; color: var(--tinta-suave); }
+.tranquila { margin-top: 14px; padding: 10px 14px; background: var(--celeste); border-radius: 14px; font-size: .9rem; color: var(--tinta); }
+.tranquila-label { font-weight: 800; }
+.next-week { margin-top: 10px; padding: 10px 14px; background: var(--crema); border-radius: 14px; font-size: .88rem; color: var(--tinta-suave); }
+.next-week-label { font-weight: 800; color: var(--tinta); }
+.card-normal { background: var(--amarillo); box-shadow: 0 8px 20px rgba(233,196,106,.25); }
+.card-normal .eyebrow { color: #B07A3A; }
+.card-normal .card-body-text { color: var(--tinta); }
+.card-mama .card-body-text { color: var(--tinta); }
+/* Actividad de hoy */
+.act-step { margin-bottom: 13px; }
+.act-step:last-child { margin-bottom: 0; }
+.act-step-label { display: inline-flex; align-items: center; gap: 7px; font-weight: 800; font-size: .86rem; margin-bottom: 3px; color: var(--tinta); }
+.act-step-label .dot { width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: .72rem; flex-shrink: 0; }
+.d1 { background: var(--amarillo); } .d2 { background: var(--celeste); } .d3 { background: var(--verde); }
+.d4 { background: var(--rosa); } .d5 { background: var(--lila); }
+.act-title { font-family: 'Quicksand', sans-serif; font-size: 1.25rem; font-weight: 700; margin: 2px 0 14px; color: var(--tinta); }
+
+/* Tarjetas emocionales */
+.card-mama { background: var(--lila); box-shadow: 0 8px 20px rgba(160,140,210,.22); }
+.card-mama .eyebrow { color: #7B68B0; }
+.card-mama p, .card-motiv p { color: var(--tinta); }
+.card-motiv {
+  background: linear-gradient(135deg, var(--amarillo) 0%, var(--rosa) 100%);
+  box-shadow: 0 8px 20px rgba(233,196,106,.28); text-align: center; padding: 26px 22px;
+}
+.card-motiv p { font-family: 'Quicksand', sans-serif; font-size: 1.12rem; font-weight: 600; line-height: 1.5; }
+.card-motiv .eyebrow { color: #B07A3A; }
+
+
+
+.section-title { font-size: 1.15rem; font-weight: 700; margin: 24px 0 12px; }
+.ok-msg { color: #5E8A3A; font-weight: 700; margin-top: 8px; font-size: .9rem; }
+.small-text { font-size: .88rem; color: var(--tinta-suave); margin: 6px 0 4px; }
+.disclaimer { font-size: .8rem; color: var(--tinta-suave); text-align: center; padding: 14px 14px 0; line-height: 1.45; }
+
+
+/* Modal celebrar logro */
+.modal-bg {
+  position: fixed; inset: 0; background: rgba(91,74,66,.35); z-index: 40;
+  display: flex; align-items: flex-end; justify-content: center;
+}
+.modal {
+  background: var(--blanco); border-radius: 26px 26px 0 0; width: 100%; max-width: 520px;
+  padding: 24px 22px calc(24px + env(safe-area-inset-bottom));
+  animation: up .25s ease;
+}
+@keyframes up { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+.modal h3 { font-size: 1.2rem; margin-bottom: 4px; }
+.modal .small-text { margin-bottom: 8px; }
+  </style>
+</head>
+<body class="locked">
+
+  <!-- ====== ACCESO ====== -->
+  <section id="screen-lock" class="lockscreen" hidden>
+    <div class="lock-inner">
+      <div class="lock-logo-wrap">
+        <img src="bebe.png.png" alt="Bebé sonriendo en una macetita" class="lock-logo">
+        <span class="sparkle s1">✦</span><span class="sparkle s2">✦</span><span class="sparkle s3">✦</span>
+      </div>
+      <h1 class="lock-title">Mi Bebé Hoy</h1>
+      <p class="lock-sub">Tu compañía diaria durante el primer año de tu bebé.</p>
+      <div id="lockStep1">
+        <button class="btn btn-primary btn-big" id="btnComenzar">Comenzar</button>
+      </div>
+      <div id="lockStep2" hidden>
+        <label class="field-label" for="passInput">Escribe tu clave de acceso</label>
+        <input type="password" id="passInput" class="input input-center" placeholder="Clave de acceso" autocomplete="off">
+        <p class="lock-hint">La encuentras en tu PDF de compra.</p>
+        <p class="lock-error" id="lockError" hidden>Esa clave no es correcta. Revísala e inténtalo de nuevo.</p>
+        <button class="btn btn-primary btn-big" id="btnDesbloquear">Entrar</button>
+        <button class="btn btn-ghost" id="btnVolverLock">Volver</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== PRIMERA VEZ: DATOS DEL BEBÉ ====== -->
+  <section id="screen-onboarding" class="lockscreen" hidden>
+    <div class="lock-inner">
+      <img src="bebe.png.png" alt="" class="lock-logo lock-logo-sm">
+      <h2 class="lock-title">¡Bienvenida! 🌸</h2>
+      <p class="lock-sub">Cuéntanos sobre tu bebé para acompañarlos, a ti y a él, todos los días.</p>
+      <label class="field-label" for="obName">Nombre del bebé</label>
+      <input type="text" id="obName" class="input input-center" placeholder="Ej. Sofía" maxlength="30">
+      <label class="field-label" for="obBirth">Fecha de nacimiento</label>
+      <input type="date" id="obBirth" class="input input-center">
+      <p class="lock-error" id="obError" hidden>Completa el nombre y una fecha válida (no futura).</p>
+      <button class="btn btn-primary btn-big" id="btnGuardarBebe">Comenzar mi aventura 💛</button>
+    </div>
+  </section>
+
+  <!-- ====== APP ====== -->
+  <div id="app" hidden>
+    <header class="topbar">
+      <img src="bebe.png.png" alt="" class="topbar-logo">
+      <div class="topbar-text">
+        <span class="topbar-name" id="tbName">Mi Bebé Hoy</span>
+        <span class="topbar-age" id="tbAge"></span>
+      </div>
+      <button class="gear" id="btnGear" aria-label="Ajustes">⚙️</button>
+    </header>
+
+    <main id="main">
+
+      <!-- Cabecera de semana -->
+      <div class="card card-hero">
+        <p class="hero-greet" id="heroGreet"></p>
+        <p class="hero-age" id="heroSub"></p>
+        <p class="hero-age"><span id="heroAge"></span></p>
+        <p class="hero-week" id="heroWeek"></p>
+      </div>
+
+      <!-- 1. ESTA SEMANA CON TU BEBÉ -->
+      <div class="card">
+        <p class="eyebrow" style="color:var(--celeste-fuerte)">🌱 Esta semana con tu bebé</p>
+        <p class="card-body-text" id="semanaText"></p>
+        <p class="tranquila"><span class="tranquila-label">🤍 Tranquila</span> <span id="tranqText"></span></p>
+        <p class="next-week"><span class="next-week-label" id="proxLabel">✨ La próxima semana:</span> <span id="proxText"></span></p>
+      </div>
+
+      <!-- 2. HAZ ESTO HOY -->
+      <div class="card">
+        <p class="eyebrow" style="color:var(--rosa-fuerte)">🎈 Haz esto esta semana</p>
+        <p class="act-title" id="actTitle"></p>
+        <div id="actSteps"></div>
+      </div>
+
+      <!-- 3. PARA TI, MAMÁ -->
+      <div class="card card-mama">
+        <p class="eyebrow">💜 Para ti, mamá</p>
+        <p class="card-body-text" id="mamaText"></p>
+      </div>
+
+      <!-- 4. ¿SABÍAS QUE...? -->
+      <div class="card card-normal">
+        <p class="eyebrow">💡 ¿Sabías que...?</p>
+        <p class="card-body-text" id="sabiasText"></p>
+      </div>
+
+      <!-- Ajustes -->
+      <div id="ajustes" hidden>
+        <h2 class="section-title">Ajustes</h2>
+        <div class="card">
+          <label class="field-label" for="setName">Nombre de tu bebé</label>
+          <input type="text" id="setName" class="input" maxlength="30">
+          <label class="field-label" for="setBirth">Fecha de nacimiento</label>
+          <input type="date" id="setBirth" class="input">
+          <button class="btn btn-primary" id="btnSaveSettings">Guardar cambios</button>
+          <p class="ok-msg" id="setOk" hidden>Cambios guardados ✓</p>
+          <button class="btn btn-danger-soft" id="btnReset">Empezar de cero (borrar datos del bebé)</button>
+          <p class="small-text">Todo se guarda únicamente en este teléfono. Nada sale de tu dispositivo.</p>
+        </div>
+      </div>
+
+      <p class="disclaimer">Mi Bebé Hoy es una herramienta de organización y registro. No brinda diagnósticos ni reemplaza la consulta con profesionales de la salud.</p>
+    </main>
+  </div>
+
+  <script>
+(function () {
+  "use strict";
+
+  var CLAVE_ACCESO = "MiBebeDuerme2026";
+  /* Claves v2: al ser nuevas, cualquier dato de prueba guardado con la
+     versión anterior queda ignorado y la app arranca limpia. */
+  var LS = { unlocked: "mbh_unlocked", baby: "mbh_baby", logros: "mbh_logros" };
+
+  function $(id) { return document.getElementById(id); }
+  function read(k, f) { try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : f; } catch (e) { return f; } }
+  function write(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
+  function esc(s) { return String(s || "").replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function dayOfYear() { var n = new Date(); return Math.floor((n - new Date(n.getFullYear(), 0, 0)) / 86400000); }
+
+  /* Edad exacta: meses, semanas y días */
+  function babyAge(birthISO) {
+    var birth = new Date(birthISO + "T00:00:00");
+    var now = new Date(); now.setHours(0, 0, 0, 0);
+    if (now < birth) return { months: 0, weeks: 0, days: 0, text: "por nacer" };
+    var months = (now.getFullYear() - birth.getFullYear()) * 12 + (now.getMonth() - birth.getMonth());
+    var anchor = new Date(birth); anchor.setMonth(anchor.getMonth() + months);
+    if (anchor > now) { months--; anchor = new Date(birth); anchor.setMonth(anchor.getMonth() + months); }
+    var totalDays = Math.round((now - anchor) / 86400000);
+    var weeks = Math.floor(totalDays / 7), days = totalDays % 7;
+    var p = [];
+    if (months > 0) p.push(months + (months === 1 ? " mes" : " meses"));
+    if (weeks > 0) p.push(weeks + (weeks === 1 ? " semana" : " semanas"));
+    if (days > 0 || p.length === 0) p.push(days + (days === 1 ? " día" : " días"));
+    var text = p.length > 1 ? p.slice(0, -1).join(", ") + " y " + p[p.length - 1] : p[0];
+    if (months === 0 && weeks === 0 && days === 0) text = "recién nacido 🤍";
+    return { months: months, weeks: weeks, days: days, text: text };
+  }
+
+  /* ---------- Contenido semanal: 52 semanas únicas ---------- */
+var SEMANAS = [
+/* ===== MES 1 ===== */
+{ s:"Tu bebé acaba de llegar y su gran tarea es adaptarse: a respirar, a comer, a la luz y a los sonidos. Duerme la mayor parte del día en tandas cortas y te reconoce por tu voz y tu olor. En los próximos días notarás que se calma más rápido en tus brazos que en cualquier otro lugar.",
+  t:"Nido de calma piel con piel", o:"Ayudar a tu bebé a regular su temperatura, respiración y estrés tras el nacimiento.", m:"Solo ustedes dos y una mantita ligera.", c:"Recuéstate semisentada, coloca a tu bebé en pañal sobre tu pecho desnudo, cúbrelo con la manta y respira lento mientras le hablas bajito.", d:"20 minutos, o lo que ambos disfruten.", b:"Estabiliza sus signos vitales, favorece la lactancia y construye el primer gran cimiento del apego.", v:"Observa cómo su respiración se acompasa con la tuya y si se queda dormido: es señal de seguridad profunda.",
+  ma:"Esta semana tu única meta es sobrevivir con ternura: comer algo caliente, dormir cuando puedas y dejar que otros hagan el resto. Nadie espera que estés recuperada a días del parto. Si alguien pregunta cómo ayudar, di una tarea concreta: 'trae almuerzo', 'lava esa ropa'. Aceptar ayuda también es cuidar a tu bebé." },
+
+{ s:"Esta semana tu bebé empieza a pasar ratitos más despierto y tranquilo, sobre todo después de comer. Sus movimientos son bruscos y temblorosos porque su sistema nervioso está madurando. Puede enfocarte mejor cuando estás a 25-30 cm: justo la distancia entre tu cara y la suya cuando lo alimentas.",
+  t:"El teatro de tu rostro", o:"Estimular su visión y su interés por los rostros humanos.", m:"Tu cara y buena disposición para hacer gestos.", c:"Con el bebé tranquilo en tus brazos, acércate a 25-30 cm, abre mucho los ojos, saca la lengua despacio y sonríe exagerado, dejando pausas entre cada gesto.", d:"5 minutos, un par de veces al día.", b:"Fortalece el enfoque visual y las neuronas que se especializan en leer rostros, base de toda su vida social.", v:"Mira si sostiene tu mirada unos segundos o intenta imitar tu lengua afuera: algunos recién nacidos ya lo hacen.",
+  ma:"El cansancio de esta semana puede hacerte llorar sin saber por qué: son también las hormonas reacomodándose. Permítete llorar sin culpa y cuéntale a alguien de confianza cómo te sientes de verdad, no cómo 'deberías' sentirte. Hablar en voz alta baja la mitad del peso." },
+
+{ s:"Alrededor de esta semana muchos bebés tienen su primer 'brote de crecimiento': de pronto quiere comer a cada rato y está más inquieto. No es que tu leche no alcance ni que algo esté mal: está creciendo a toda velocidad y pidiendo el combustible que necesita. Suele durar dos o tres días.",
+  t:"Paseo sonoro por la casa", o:"Despertar su atención auditiva con los sonidos cotidianos del hogar.", m:"Tu casa tal como es: la llave del agua, una cuchara, la lavadora, una ventana.", c:"Cárgalo pegado a tu pecho y recorre la casa deteniéndote en cada sonido: 'escucha, el agua', 'ese es el viento'. Habla despacio y deja silencios para que procese.", d:"10 minutos de paseo tranquilo.", b:"Afina su discriminación auditiva y asocia tu voz con la exploración segura del mundo.", v:"Nota si se queda quieto al escuchar un sonido nuevo o gira levemente la cabeza buscándolo.",
+  ma:"Si la lactancia duele o te angustia, no lo calles por vergüenza: busca esta misma semana una asesora de lactancia o pregúntale a tu pediatra. El dolor no es el precio obligatorio de alimentar a tu bebé, y pedir apoyo a tiempo cambia toda la experiencia." },
+
+{ s:"Tu bebé cumple su primer mes y ya no es el mismo: sostiene la cabecita por segundos, fija mejor la mirada y empieza a emitir sonidos suaves distintos al llanto. El llanto vespertino puede aumentar por estos días; anochecer con un bebé inquieto en brazos es más común de lo que imaginas.",
+  t:"Sombras y contrastes", o:"Estimular su visión con los contrastes de luz que ya puede distinguir.", m:"Una lámpara o linterna suave y una habitación en penumbra.", c:"En la tarde, proyecta la luz sobre la pared y mueve lentamente tu mano formando sombras grandes. Nómbralas: 'mira, un pájaro', 'ahora una flor'.", d:"5 a 8 minutos antes de su rutina de la noche.", b:"Ejercita el seguimiento visual y la adaptación de sus pupilas, y crea un ritual tranquilo de cierre del día.", v:"Observa si sigue la sombra con la mirada y si el juego lo calma o lo activa, para elegir mejor el momento.",
+  ma:"Cuando el llanto de la tarde te desborde, recuerda: puedes dejar al bebé seguro en su cuna, salir dos minutos, respirar y volver. Eso no es abandonarlo, es cuidarte para cuidarlo. Y si puedes turnarte los atardeceres con alguien, hazlo sin culpa." },
+
+/* ===== MES 2 ===== */
+{ s:"Empieza una semana luminosa: las sonrisas sociales están apareciendo. Ya no son muecas dormidas, son sonrisas para ti, como respuesta a tu voz y tu cara. Tu bebé también 'gorjea': hace vocales largas tipo 'aaah' y 'oooh' cuando está contento.",
+  t:"Conversación de gorjeos", o:"Iniciar sus primeros 'diálogos' respetando turnos de conversación.", m:"Ninguno: tu voz y tu paciencia.", c:"Cuando haga un sonido, imítalo con el mismo tono, espera en silencio mirándolo a los ojos y deja que 'responda'. Repite el ciclo como una charla real.", d:"5 a 10 minutos en su momento más despierto.", b:"Le enseña la estructura básica de toda conversación humana: yo hablo, tú respondes.", v:"Cuenta cuántos turnos logran encadenar; cada semana serán más largos.",
+  ma:"Ya pasó lo más intenso del posparto físico, pero el emocional sigue. Hazte un chequeo honesto: ¿hay momentos de disfrute entre el cansancio? Si la tristeza o la ansiedad ocupan casi todo el día desde hace dos semanas, coméntalo con tu médico. La depresión posparto es común, tratable y no dice nada malo de ti como mamá." },
+
+{ s:"Tu bebé descubre esta semana un juguete que llevará siempre consigo: sus manos. Empieza a mirárselas con fascinación y a mantenerlas más abiertas. Sus períodos despierto se alargan y disfruta cada vez más los rostros y las voces conocidas.",
+  t:"Guantecito descubre-manos", o:"Ayudarlo a descubrir sus propias manos y su lado izquierdo y derecho.", m:"Un calcetín pequeño de color vivo o con un cascabel seguro cosido.", c:"Acuéstalo boca arriba, ponle el calcetín en una mano y deja que la busque con la mirada al moverla. A los minutos, cámbialo de mano.", d:"6 a 8 minutos.", b:"Acelera el descubrimiento del propio cuerpo y la conexión entre ver y mover.", v:"Mira si sigue la mano decorada, si la acerca a su cara o intenta llevársela a la boca.",
+  ma:"Sal de casa esta semana aunque sea a la esquina. El encierro alimenta la sensación de estar sola con todo. Quince minutos de sol y aire con tu bebé en brazos o coche cambian el ánimo del día entero. No necesitas un plan: la vuelta a la manzana cuenta." },
+
+{ s:"El cuello de tu bebé gana fuerza a pasos agigantados: boca abajo ya levanta la cabeza a 45 grados por ratitos. Sigue objetos que cruzan frente a él y empieza a demostrar con todo el cuerpo cuándo algo le encanta: patalea, agita brazos y sonríe a la vez.",
+  t:"Gimnasio de pancita con espejo", o:"Fortalecer cuello y espalda haciendo el tiempo boca abajo irresistible.", m:"Una manta firme en el piso y un espejo de juguete o de mano (seguro) apoyado frente a él.", c:"Ponlo boca abajo con el espejo a 20 cm de su cara. Acuéstate a su lado y llama su atención hacia 'ese bebé' del reflejo.", d:"3 a 5 minutos, dos o tres veces al día, siempre despierto y contigo.", b:"Desarrolla la musculatura que necesitará para girar, sentarse y gatear, mientras el reflejo mantiene su motivación.", v:"Registra cuántos segundos sostiene la cabeza en alto; verás el progreso semana a semana.",
+  ma:"Haz un inventario de tus noches: ¿quién más puede tomar un turno, aunque sea uno? Si das pecho, alguien puede encargarse del cambio de pañal y de volver a dormirlo mientras tú solo amamantas. Dormir un bloque de 3 o 4 horas seguidas una vez a la semana no es lujo: es mantenimiento básico." },
+
+{ s:"Tu bebé cierra su segundo mes hecho un conversador de vocales y sonrisas. Reconoce a las personas que más lo cuidan y puede calmarse con solo escucharlas llegar. Sus puños se abren cada vez más: pronto empezará a golpear juguetes colgantes a propósito.",
+  t:"Móvil casero al alcance de sus pies", o:"Provocar sus primeros golpes y patadas intencionales a un objeto.", m:"Un pañuelo de color vivo o globo inflado (vigilado) atado con seguridad al costado de la cuna o gimnasio, a la altura de sus pies.", c:"Acuéstalo de modo que sus patadas rocen el objeto. Cada vez que lo mueva, celebra: '¡lo lograste!'. Luego pásalo a la altura de sus manos.", d:"8 a 10 minutos supervisados; retira el objeto al terminar.", b:"Inaugura la noción de causa y efecto: 'mi cuerpo hace que las cosas pasen'.", v:"Nota si repite el movimiento buscando el mismo resultado: esa repetición es aprendizaje puro.",
+  ma:"Dos meses cuidando a alguien 24/7 merece reconocimiento. Escríbete hoy una nota con tres cosas que has aprendido a hacer que hace ocho semanas no sabías. Léela cuando la mente te diga 'no estás haciendo suficiente'. La evidencia dirá lo contrario." },
+
+/* ===== MES 3 ===== */
+{ s:"Comienza el tercer mes y con él una etapa más sonriente y predecible. Tu bebé junta las manos en el centro de su cuerpo, se las mira largo rato y responde con todo su ser cuando le hablan. Los patrones de sueño empiezan, tímidamente, a organizarse.",
+  t:"Cosquillas de texturas en las manos", o:"Despertar la sensibilidad táctil de sus manos, protagonistas de esta etapa.", m:"Tres telas distintas de casa: algodón suave, toalla y algo sedoso.", c:"Pasa cada tela lentamente por sus palmas y dedos mientras la nombras: 'suave', 'rasposita', 'resbalosa'. Deja que apriete cada una.", d:"6 a 8 minutos, en su rato más despierto.", b:"Refina el tacto fino y enriquece las conexiones entre sensación y lenguaje.", v:"Observa si aprieta las telas, si prefiere alguna o si busca llevarlas a la boca.",
+  ma:"La 'niebla mental' de estas semanas —olvidar palabras, perder el hilo— es real y tiene causa: sueño fragmentado y una revolución hormonal. No estás perdiendo capacidad; tu cerebro está priorizando a tu cría. Anota lo importante y perdónate el resto." },
+
+{ s:"Tu bebé descubre esta semana que su voz tiene volumen y matices: chilla de alegría, hace burbujas con la saliva y 'canta' vocales largas. Boca abajo se apoya en los antebrazos como una pequeña esfinge y mira el mundo con curiosidad nueva.",
+  t:"Concierto de canciones con gestos", o:"Unir música, lenguaje y movimiento en su memoria.", m:"Tu voz y una canción infantil corta con gestos (como 'los pollitos dicen').", c:"Cántale la misma canción dos o tres veces seguidas haciendo siempre los mismos gestos con las manos. Repítela todos los días de esta semana.", d:"5 minutos, las veces que quieran.", b:"La repetición con gestos construye memoria, anticipación y las bases musicales del lenguaje.", v:"Al tercer o cuarto día, observa si se emociona al reconocer los primeros acordes: pataleo y sonrisa delatan que ya la conoce.",
+  ma:"Esta semana, practica decir una frase difícil: 'no puedo'. No puedo recibir visitas hoy, no puedo cocinar además de todo, no puedo seguir la conversación. Ponerte límites no te hace malagradecida: te mantiene entera para lo esencial." },
+
+{ s:"La coordinación ojo-mano de tu bebé da un salto: ya dirige la mano hacia lo que ve, aunque a veces falle la puntería. Sostiene un juguete liviano si se lo colocas en la mano y explora tu cara con sus deditos cuando lo cargas.",
+  t:"Alcanza el aro", o:"Practicar el alcance dirigido, la gran habilidad de esta semana.", m:"Un aro de plástico liviano o un mordedor fácil de agarrar.", c:"Con el bebé boca arriba o semisentado en tu regazo, sostén el aro a 15 cm de su mano y espera. Si lo roza, acércalo un poquito para que logre atraparlo.", d:"6 a 10 minutos con pausas.", b:"Entrena la precisión del alcance y le regala la satisfacción de conseguir lo que se propone.", v:"Nota si abre la mano antes de llegar al objeto: es señal de que su cerebro ya planifica el agarre.",
+  ma:"¿Hace cuánto no haces algo con las manos que no sea cuidar? Cocinar algo rico, tejer, dibujar, arreglar una planta. Elige una actividad manual de 20 minutos esta semana. Las manos ocupadas en algo propio le dan un respiro enorme a la mente." },
+
+{ s:"Tu bebé se ríe: la primera carcajada suele estrenarse por estos días y es uno de los sonidos más felices del primer año. Sostiene la cabeza con firmeza, gira hacia los sonidos con precisión y algunos ya ensayan medio giro de costado.",
+  t:"Detective de carcajadas", o:"Descubrir qué hace reír a tu bebé y estrenar sus primeras carcajadas.", m:"Tu creatividad: soplidos, sonidos, besos ruidosos.", c:"Prueba distintos 'trucos' con pausas entre uno y otro: soplar suave su pancita, besos sonoros en el cuello, un '¡achís!' teatral. Repite el que más le guste.", d:"5 a 10 minutos de juego.", b:"La risa compartida libera oxitocina en ambos y refuerza el vínculo como pocas cosas.", v:"Anota su 'truco' infalible de esta semana: te será oro en días difíciles.",
+  ma:"Revisa tu teléfono: ¿las fotos son todas del bebé? Pídele a alguien que esta semana les tome una foto a los dos juntos, y otra a ti sola. Tú también estás en esta historia, y dentro de unos años querrás verte en ella." },
+
+{ s:"Cierre del tercer mes: tu bebé es otro comparado con el recién nacido de hace 13 semanas. Se comunica con sonrisas, sonidos y todo el cuerpo; explora sus manos como un tesoro y sostiene la cabeza como un campeón. Ha aprendido, sobre todo, que puede confiar en ti.",
+  t:"Sesión de cuento con voces", o:"Sembrar el amor por los libros y estirar su atención compartida.", m:"Un libro de bebés con imágenes grandes y contrastadas.", c:"Siéntalo recostado en ti, lee señalando cada imagen y ponle una voz distinta a cada personaje. Deja que manotee las páginas.", d:"10 minutos, o hasta que pida cambio de plan.", b:"Asocia los libros con placer y cercanía, y multiplica las palabras que escucha al día.", v:"Observa qué página lo hace detenerse: los bebés eligen favoritas mucho antes de hablar.",
+  ma:"Trimestre uno: completado. Fue probablemente el más intenso de tu vida. Celébralo de alguna forma concreta esta semana: tu postre favorito, una serie nueva, contarle a tu bebé en voz alta todo lo que superaron juntos. Los hitos de la mamá también se festejan." },
+];
+
+var SEMANAS_B = [
+/* ===== MES 4 ===== */
+{ s:"Arranca el cuarto mes con un bebé sociable y expresivo que reconoce tu voz entre todas. Esta semana practica con empeño el giro de boca arriba a boca abajo, y sus manos ya no solo tocan: agarran, sacuden y sueltan.",
+  t:"Pista de giros con premio", o:"Acompañar sus primeros giros completos de espalda a pancita.", m:"Una manta en el piso y su juguete favorito.", c:"Acuéstalo boca arriba, muéstrale el juguete a un costado a la altura de sus ojos y anímalo a alcanzarlo. Si lo necesita, guía suavemente su cadera para completar el giro.", d:"8 a 10 minutos por sesión.", b:"Fortalece los músculos rotadores del tronco y estrena su primera forma de desplazarse.", v:"Fíjate hacia qué lado gira mejor y ofrece el juguete más veces por el lado difícil, para equilibrar.",
+  ma:"Si esta semana el sueño roto te tiene al límite, divide la noche en turnos aunque des pecho: tú amamantas, alguien más se encarga de los brazos y el arrullo. Y baja toda exigencia diurna: en semanas de regresión, el plan es solo pasar el día lo más acompañadas posible." },
+
+{ s:"Tu bebé descubre esta semana el placer de agitar cosas: todo lo que agarra lo sacude para ver qué suena. Sus carcajadas son más fáciles de provocar y empieza a anticipar rutinas: se emociona al ver el pecho, el biberón o la bañerita.",
+  t:"Orquesta de sonajeros", o:"Explorar causa y efecto a través del sonido.", m:"Dos o tres objetos seguros que suenen distinto: sonajero, botella pequeña bien cerrada con arroz, llavero de juguete.", c:"Entrégale uno a la vez y muéstrale cómo sacudirlo. Después imita tú el ritmo que él haga, como un eco.", d:"10 minutos.", b:"Refuerza el agarre voluntario, la causa-efecto y los primeros 'diálogos' rítmicos.", v:"Observa si sacude con más fuerza al descubrir que produce el sonido, y si cambia de mano.",
+  ma:"Piensa en tu red de apoyo con nombres propios: ¿quién te escucha sin juzgar? ¿Quién te haría un favor hoy? Escríbele a una de esas personas esta semana, aunque solo sea para saludar. Las redes se mantienen usándolas, y las vas a necesitar todo el año." },
+
+{ s:"Semana de experimentos vocales: tu bebé grita agudo, hace trompetillas y juega con el volumen de su voz, fascinado con lo que puede producir. Sostenido de pie sobre tus piernas, empuja con fuerza y 'salta': sus piernas se preparan para el futuro.",
+  t:"Saltos de resorte en tus piernas", o:"Fortalecer piernas y darle su dosis de movimiento con carcajada incluida.", m:"Tus piernas y tus manos sosteniendo firme su tronco.", c:"Siéntate, páralo sobre tus muslos sujetándolo por el tronco y deja que flexione y empuje 'saltando' mientras le cantas un ritmo.", d:"5 minutos, con descansos si se cansa.", b:"Desarrolla fuerza y tono en las piernas y el placer del movimiento compartido.", v:"Nota si empuja con ambas piernas por igual y si pide más cuando paras: estirará el cuerpo hacia ti.",
+  ma:"El cuerpo posparto a los cuatro meses sigue siendo un cuerpo en recuperación. Si puedes, retoma algún movimiento amable: caminatas con el coche, estiramientos de 10 minutos en el piso junto al bebé. No para 'volver a ser la de antes', sino para habitar con más comodidad la que eres ahora." },
+
+{ s:"Tu bebé cierra el cuarto mes convertido en un pequeño científico social: estudia tu cara cuando hablas, imita algunos gestos y llora distinto según lo que necesita. Es probable que ya ruede en una dirección y esté ensayando la vuelta completa.",
+  t:"El juego del pañuelo que desaparece", o:"Introducir la noción de que las cosas siguen existiendo aunque no se vean.", m:"Un pañuelo o tela liviana y un juguete llamativo.", c:"Deja que mire el juguete, cúbrelo a medias con el pañuelo y pregunta '¿dónde está?'. Descúbrelo con un '¡aquí está!' festivo. Repite cubriéndolo un poquito más cada vez.", d:"8 minutos.", b:"Siembra la permanencia del objeto, pilar del pensamiento y de la memoria.", v:"Observa si jala el pañuelo para encontrar el juguete: si lo hace, su memoria de trabajo está despegando.",
+  ma:"Si vuelves al trabajo pronto o ya volviste, la mezcla de alivio, culpa y nostalgia es normal: pueden convivir todas a la vez. Trabajar no borra tu vínculo; los bebés construyen apego con presencia de calidad, no con presencia perfecta. Y si te toca dejar listas instrucciones kilométricas: respira, quien lo cuida también aprenderá." },
+
+/* ===== MES 5 ===== */
+{ s:"Quinto mes: la boca es oficialmente el laboratorio central. Todo lo que tu bebé agarra viaja directo a ella, y así estudia texturas, formas y temperaturas. Ya rueda con más soltura y puede empezar a girar en ambas direcciones.",
+  t:"Bandeja fría, tibia y rugosa", o:"Ofrecer un banquete sensorial seguro para su boca exploradora.", m:"Tres mordedores o juguetes seguros: uno liso, uno rugoso y uno refrigerado (no congelado).", c:"Ofrécele uno a la vez y nombra lo que siente: 'frío', 'suavecito', 'con bolitas'. Deja que los compare a su ritmo.", d:"10 minutos supervisados.", b:"Alimenta su mapa sensorial y alivia encías si ya vienen molestias de dientes.", v:"Nota cuál prefiere y si muerde más de un lado de la boca que del otro.",
+  ma:"Esta semana, come tú también como si te cuidara alguien: fruta cortada, agua a la mano, algo caliente al menos una vez al día. Suena básico, pero muchas mamás alimentan impecablemente a su bebé mientras se saltan sus propias comidas. Tu energía sale de ahí." },
+
+{ s:"Tu bebé pasa objetos de una mano a la otra: parece simple, pero es una proeza de coordinación entre los dos lados de su cerebro. También se estira en todas las direcciones para alcanzar cosas, girando y pivotando sobre su pancita.",
+  t:"Trasvase de mano a mano", o:"Afinar el intercambio de objetos entre sus dos manos.", m:"Un aro o argolla fácil de agarrar y un segundo juguete interesante.", c:"Dale el aro en una mano y, cuando lo tenga firme, ofrécele el otro juguete por el mismo lado. Para tomarlo, tendrá que pasar el aro a la otra mano: dale tiempo de resolverlo.", d:"8 a 10 minutos.", b:"Integra ambos hemisferios y prepara la manipulación fina de los próximos meses.", v:"Observa cómo resuelve el 'problema': ¿pasa el objeto, lo suelta, lo muerde para liberar la mano? Toda estrategia es aprendizaje.",
+  ma:"Prepara tu corazón para los 'todavía no': todavía no duerme toda la noche, todavía no te queda tiempo propio, todavía no te sientes tú. Los 'todavía' son promesas, no sentencias. Cada etapa que hoy pesa tiene fecha de vencimiento, aunque no la conozcas." },
+
+{ s:"Semana de personalidad: tu bebé ya tiene juguetes favoritos, personas favoritas y formas claras de decir 'esto no me gusta'. Sentado con apoyo aguanta más tiempo y usa las manos con más libertad porque su tronco sostiene mejor.",
+  t:"Picnic de piso con canasta de tesoros", o:"Fomentar la exploración libre y sostenida en posición sentada con apoyo.", m:"Cojines de apoyo y una canasta con 4 o 5 objetos cotidianos seguros: cuchara de palo, tapa grande, tela, argolla, cepillo suave.", c:"Siéntalo bien apoyado, pon la canasta enfrente y deja que saque, examine y descarte a su ritmo. Interviene solo para nombrar lo que agarra.", d:"12 a 15 minutos supervisados.", b:"Cultiva concentración, decisión propia y motricidad fina, todo en un solo juego.", v:"Cronometra cuánto se concentra en un objeto: la atención sostenida es un músculo que estás viendo crecer.",
+  ma:"Identifica tu 'hora más difícil' del día (para muchas es el final de la tarde) y prográmale un plan de contención: música que te guste, salir al balcón, llamar a alguien mientras cargas al bebé. No puedes eliminar la hora difícil, pero sí dejar de enfrentarla desarmada." },
+
+{ s:"Cierra el quinto mes con un bebé fuerte que hace 'el avioncito' boca abajo: levanta brazos y piernas a la vez, fortaleciendo toda la espalda. Entiende cada vez más el tono de tu voz y puede frenar en seco ante un 'no' suave... por dos segundos.",
+  t:"Avioncito y superhéroe", o:"Fortalecer toda su cadena muscular posterior jugando.", m:"Manta en el piso; opcionalmente tus piernas como 'avión'.", c:"Boca abajo, agita un juguete al frente y arriba para que despegue brazos y pecho. Variante estrella: acuéstate, vuélalo sobre tus piernas flexionadas sosteniéndolo firme, cara a cara.", d:"6 a 8 minutos con pausas.", b:"Prepara la musculatura del gateo y regala vestibular (movimiento) del que su cerebro se nutre.", v:"Observa cuántos segundos sostiene la postura de avioncito y si se ríe más en las 'turbulencias' suaves.",
+  ma:"Cinco meses después, quizás notes que algunas amistades se enfriaron y otras se volvieron oro. Es la reorganización natural de esta etapa. Suelta sin rencor lo que se distanció y riega lo que floreció: una amiga que pregunta '¿y tú cómo estás?' vale un tesoro." },
+
+/* ===== MES 6 ===== */
+{ s:"¡Medio año! Tu bebé probablemente ya se sienta con poco apoyo, y su mundo cambia de panorama: manos libres y vista de primera fila. Esta semana muchos estrenan también su primera cucharada: comienza la aventura de la comida.",
+  t:"Primera fiesta de sabores", o:"Estrenar (o afianzar) la alimentación complementaria como experiencia sensorial positiva.", m:"El alimento que su pediatra haya indicado para iniciar, en la textura adecuada, silla firme o tu regazo, y babero grande.", c:"Elige un momento sin hambre feroz ni sueño. Ofrece pequeñas porciones, deja que huela, toque y pruebe sin prisa, y come tú algo delante: te imitará.", d:"15 minutos sin presión: comer poco al inicio es lo esperable.", b:"Construye una relación de curiosidad y placer con la comida que durará toda la vida.", v:"Observa gestos, arcadas leves (normales al aprender) y qué texturas tolera mejor. La leche sigue siendo su alimento principal.",
+  ma:"La etapa de la comida viene con opiniones de todo el mundo: la abuela, la vecina, internet. Elige a tu pediatra como tu única fuente oficial y practica la frase mágica para el resto: 'gracias, lo tendré en cuenta'. Proteger tu tranquilidad también es nutrición familiar." },
+
+{ s:"Tu bebé balbucea en cadenas: 'bababa', 'mamama', 'papapa', todavía sin significado pero con toda la musicalidad del idioma. Sentado, gira el tronco para alcanzar cosas a los lados, y algunos ya se inclinan hacia adelante intentando avanzar.",
+  t:"Eco de sílabas con turnos", o:"Convertir sus cadenas de balbuceo en conversaciones con estructura.", m:"Tu voz, cara a cara, sin pantallas ni ruido de fondo.", c:"Cuando diga 'bababa', respóndele exactamente igual, espera su turno, y luego varía una sílaba: 'bababa... ¡bebebe!'. Celebra si intenta imitarte.", d:"5 minutos varias veces al día, en momentos naturales.", b:"Enseña turnos, imitación vocal y expande su repertorio de sonidos: el gimnasio del lenguaje.", v:"Anota qué sílabas domina: 'ma', 'pa' y 'ba' suelen liderar. Pronto una de ellas te derretirá el corazón.",
+  ma:"Con el inicio de la comida, tu agenda ganó una tarea más. Compensa simplificando otra: esta semana, elige un atajo sin culpa (comida a domicilio, ropa sin doblar, baño de esponja un día). Cada etapa nueva del bebé merece que algo viejo de la lista se caiga." },
+
+{ s:"Semana de músculos y equilibrio: sentado sin apoyo por ratos cada vez más largos, tu bebé usa las manos para atajarse cuando se ladea. Reconoce su nombre y puede voltear cuando lo llamas: uno de los hitos más emocionantes de escuchar.",
+  t:"El juego de su nombre", o:"Afianzar el reconocimiento de su propio nombre.", m:"Dos personas (o tú y un peluche con 'voz') en lados opuestos.", c:"Por turnos, llámenlo por su nombre desde distintos puntos con voz alegre y esperen a que voltee. Cuando lo haga, festejen y acérquense a abrazarlo.", d:"Unos 7 minutos, con final feliz antes del cansancio.", b:"Consolida la identidad, la atención auditiva y el placer de responder al llamado.", v:"Cuenta cuántas veces voltea al escucharlo. Si aún no lo hace siempre, es normal: sigue nombrándolo en positivo todo el día.",
+  ma:"Mitad del año: haz una pausa de perspectiva. Escribe o dicta una nota de voz contándote a ti misma cómo era tu bebé al nacer y cómo es hoy. El día a día esconde los avances; la vista panorámica te mostrará todo lo que has sostenido y logrado. Guárdala para releerla en diciembre." },
+
+{ s:"Tu bebé estudia los objetos como un pequeño ingeniero: los gira, los golpea entre sí, los tira y observa qué pasa. Tirar cosas al piso empieza a ser su experimento favorito, y tu paciencia, su laboratorio.",
+  t:"Laboratorio de '¿qué pasa si...?'", o:"Canalizar su fase de experimentación con causa y efecto.", m:"Objetos seguros de distinto material: bloque de madera, juguete de goma, tapa metálica grande, pelota de tela.", c:"Sentados en el piso, muéstrale cómo golpear dos objetos entre sí, cómo suena cada uno al caer sobre una bandeja, cómo rueda o no rueda cada forma. Luego deja que dirija él.", d:"12 minutos.", b:"Desarrolla razonamiento causal, comparación de materiales y coordinación bimanual.", v:"Observa si repite el experimento que más le sorprendió: la repetición voluntaria es el método científico en pañales.",
+  ma:"Tu espalda y tus brazos cargan kilos crecientes todos los días. Regálales esta semana tres minutos diarios de estiramiento: cuello a los lados, hombros atrás, espalda redondeada y estirada. Ponlo de alarma en el teléfono. Cuerpo que carga amor también necesita mantenimiento." },
+
+{ s:"Cierra el sexto mes un bebé sentado, risueño y charlatán que ya tiene medio año de historia contigo. Puede empezar a mostrarse tímido con desconocidos: te busca con la mirada para saber si alguien es de fiar. Tu cara es su semáforo emocional.",
+  t:"Presentaciones con semáforo de mamá", o:"Ayudarlo a ganar confianza con personas nuevas usándote como base segura.", m:"Una visita de confianza dispuesta a ir despacio.", c:"Recibe a la persona con tu bebé en brazos, sonríe y háblale con calma ('mira, llegó la tía'). Deja que la observe desde tu regazo sin pasarlo de brazos hasta que él se estire o sonría.", d:"El ritmo lo pone el bebé: pueden ser 5 minutos o toda la visita en tus brazos.", b:"Respeta su proceso de confianza y le enseña a leer tus señales para evaluar el mundo.", v:"Observa su 'referencia social': cómo te mira a ti primero antes de decidir si sonríe al visitante.",
+  ma:"Cuando tu bebé llora con otros y solo se calma contigo, es agotador y halagador a la vez. Recuerda: ser su lugar seguro no te obliga a estar disponible el 100% del tiempo. Puedes entregarlo llorando a otro adulto amoroso e irte a la ducha: llorar en brazos seguros también es estar bien cuidado." },
+];
+
+var SEMANAS_C = [
+/* ===== MES 7 ===== */
+{ s:"Séptimo mes: el piso es el nuevo reino. Tu bebé pivota sobre la pancita como manecilla de reloj, rueda con destino fijo y algunos empiezan a reptar hacia atrás (sí, hacia atrás primero: es normal y chistoso). Su determinación para alcanzar lo que quiere es nueva y feroz.",
+  t:"Camino de obstáculos blanditos", o:"Motivar sus primeros desplazamientos con un circuito irresistible.", m:"Dos o tres cojines bajos, una manta enrollada y su juguete estrella al final del recorrido.", c:"Arma un caminito recto con los obstáculos suaves y coloca el juguete a un metro. Ponte tú detrás del juguete llamándolo. Deja que ruede, repte o se las ingenie.", d:"10 a 15 minutos.", b:"Convierte el esfuerzo físico en juego y fortalece la perseverancia tanto como los músculos.", v:"Registra su técnica de la semana: rodar, reptar, girar. La creatividad motriz de cada bebé es única.",
+  ma:"Con un bebé en movimiento, tu nivel de alerta sube solo. Bájale un cambio asegurando hoy una 'zona 100% segura' en casa (corral amplio o habitación revisada) donde puedas dejar de vigilar cada segundo. Cinco minutos de atención libre, varias veces al día, descansan más de lo que parece." },
+
+{ s:"Esta semana tu bebé entiende el juego de esconderse mejor que nunca: si tapas un juguete completamente, lo destapa. Su memoria mejoró tanto que ya extraña juguetes que guardaste y personas que no ve hace días.",
+  t:"Escondite de tres tazas", o:"Ejercitar su memoria de trabajo y la permanencia del objeto avanzada.", m:"Dos o tres vasos plásticos opacos y un juguete pequeño (más grande que su puño).", c:"A la vista de tu bebé, esconde el juguete bajo uno de los vasos y pregunta '¿dónde quedó?'. Deja que levante el vaso correcto. Cuando lo domine, mueve los vasos lentamente una vez.", d:"8 a 10 minutos, con pausas de festejo.", b:"Fortalece memoria, atención y razonamiento: es su primer 'juego de mesa'.", v:"Observa si busca en el vaso correcto de inmediato o si necesita levantar varios: ambas cosas son parte del proceso.",
+  ma:"¿Cuánto contenido de crianza consumes al día? Si las redes te dejan más ansiosa que informada, haz una limpieza: deja solo dos o tres cuentas que te den paz y silencia el resto. Tu intuición necesita espacio sin ruido para escucharse. Ya sabes más de tu bebé que cualquier algoritmo." },
+
+{ s:"El balbuceo de tu bebé suena cada vez más a conversación: encadena sílabas con entonación de pregunta, de queja y de fiesta. Aplaudir puede aparecer por estos días, y con ello el descubrimiento de que sus logros tienen público.",
+  t:"Show de imitación con aplausos", o:"Potenciar la imitación gestual, motor del aprendizaje social.", m:"Solo ustedes, frente a frente.", c:"Haz un gesto simple y espera: aplaudir, abrir y cerrar la mano, sacar la lengua, tocar tu cabeza. Celebra cualquier intento de copia y repite su versión, aunque sea aproximada.", d:"6 a 8 minutos, repartidos si prefiere.", b:"La imitación es la autopista por la que llegarán gestos, palabras y habilidades sociales.", v:"Anota qué gesto logró imitar primero: cada bebé estrena la imitación por un lugar distinto.",
+  ma:"Siete meses sin dormir corrido cambia el humor de cualquiera. Si notas irritabilidad constante contigo o con tu pareja, ponle nombre en voz alta: 'estoy agotada, no enojada contigo'. Nombrar el cansancio desactiva la mitad de las peleas que en realidad son sueño acumulado." },
+
+{ s:"Semana de manitas finas: tu bebé rastrilla objetos pequeños con todos los dedos y empieza a ensayar la pinza entre pulgar y los demás dedos. Sentado es una roca, y quizás lo encuentres inclinado hacia adelante en posición de 'casi gateo'.",
+  t:"Pesca de cereales en bandeja", o:"Refinar el agarre de precisión que pronto será pinza fina.", m:"Bandeja de silla de comer y trocitos blandos y seguros de su dieta habitual (según indicación de su pediatra).", c:"Esparce pocos trocitos por la bandeja y deja que los 'pesque' solo, sin ayudarle salvo que se frustre. Repón de a poquitos para mantener el desafío.", d:"Durante una merienda tranquila, 10 a 15 minutos.", b:"Cada trocito atrapado es una repetición de precisión que construye la pinza fina, llave de la autonomía.", v:"Observa la evolución del agarre: de barrer con toda la mano a usar cada vez menos dedos.",
+  ma:"Apúntate esta semana (aunque sea online) a un taller corto de primeros auxilios para bebés. No por miedo: por poder. Las mamás que saben qué hacer en una emergencia viven la etapa de la comida y el movimiento con muchísima más serenidad. Dos horas que compran meses de paz." },
+
+/* ===== MES 8 ===== */
+{ s:"Octavo mes: la era del movimiento se acerca a su gran estreno. Tu bebé se mece en cuatro puntos, adelante y atrás, cargando combustible para el gateo. A la par, puede llorar cuando sales de la habitación: su amor por ti ya tiene memoria y protesta.",
+  t:"Balanceo en cuatro puntos con música", o:"Afianzar la postura de gateo y su balanceo preparatorio.", m:"Piso firme con manta y una canción rítmica que le guste.", c:"Cuando esté en cuatro puntos, pon la canción y acompaña su balanceo con el ritmo: 'adelante... atrás...'. Colócale un juguete apenas adelante para tentar el primer avance.", d:"8 a 10 minutos, en varias tandas.", b:"El balanceo calibra el equilibrio y la fuerza que el gateo exigirá en simultáneo.", v:"Nota si despega una mano para intentar avanzar: es la antesala del primer 'paso' de gateo.",
+  ma:"La angustia de separación de tu bebé puede hacerte sentir presa en tu propia casa. Recuerda este principio: despedirte siempre (aunque llore) y volver siempre, enseña más que escaparte a escondidas. Y sí: puedes ir al baño con la puerta abierta cantándole desde adentro. Todas lo hemos hecho." },
+
+{ s:"Tu bebé descubre esta semana los agujeros, las ranuras y los botones: mete el dedito en todo lo que encuentra. Es su nuevo índice explorador, la herramienta de precisión con la que estudia el mundo... y los enchufes que ya deben estar tapados.",
+  t:"Panel de exploración casero", o:"Darle un territorio seguro para su dedito explorador.", m:"Una caja de cartón firme con agujeros de distintos tamaños, telas asomando, una tapa que gira y cintas para jalar (todo bien sujeto, sin piezas pequeñas sueltas).", c:"Preséntale el panel en el piso y deja que investigue cada elemento. Nombra lo que hace: 'metiste el dedo', 'jalaste la cinta', '¡giró!'.", d:"Un cuarto de hora de exploración supervisada.", b:"Canaliza su pulsión exploradora en un entorno seguro y ejercita la motricidad fina de precisión.", v:"Observa cuál elemento repite más: te dice qué desafío está calibrando su cerebro esta semana.",
+  ma:"Cuando te descubras comparando a tu bebé con otros (del parque, del grupo de mamás, de las redes), prueba este cambio de pregunta: en lugar de '¿va bien comparado con...?', pregúntate '¿va mejor que él mismo hace un mes?'. Esa es la única comparación que informa y no angustia." },
+
+{ s:"Semana de comprensión silenciosa: tu bebé entiende mucho más de lo que muestra. Reconoce palabras cotidianas ('agua', 'teta', 'papá', 'adiós'), anticipa rutinas completas y puede frenar un instante ante un 'no' firme, mirándote para verificar si va en serio.",
+  t:"Rutinas narradas paso a paso", o:"Multiplicar su comprensión del lenguaje anclándolo a acciones diarias.", m:"Sus rutinas de siempre: baño, comida, vestida.", c:"Elige una rutina y nárrala en presente simple mientras ocurre: 'ahora el agua... te quito la camiseta... la esponja en la pancita'. Usa siempre las mismas palabras clave toda la semana.", d:"Integrada a la rutina, sin tiempo extra.", b:"Los estudios lo confirman: los bebés más hablados desarrollan vocabularios más ricos. La rutina repetida es el mejor diccionario.", v:"Al final de la semana, di la palabra clave antes de la acción ('¿esponja?') y observa si mira hacia el objeto: comprensión confirmada.",
+  ma:"Ocho meses conversando con alguien que no responde en palabras puede dejarte hambrienta de conversación adulta. Prográmate una esta semana: una llamada larga, un café con alguien, aunque el bebé esté presente. Hablar de algo que no sea el bebé, con alguien que responde, es vitamina para tu identidad." },
+
+{ s:"Tu bebé combina esta semana sus superpoderes: se sienta solo desde acostado, se desplaza a su manera y usa las dos manos coordinadas para tareas complejas como sostener el vaso o desarmar tu peinado. Su fuerza de voluntad crece al ritmo de sus músculos.",
+  t:"Torre para demoler", o:"Ejercitar el golpe dirigido, la anticipación y el permiso de deshacer.", m:"Cuatro o cinco bloques blandos o vasos apilables.", c:"Construye una torre frente a él con suspenso ('uno... dos... tres...') y preséntale la demolición como gran final: '¿y ahora quééé?'. Deja que la tire y celebren juntos. Reconstruye cuantas veces pida.", d:"10 minutos (o hasta que tu espalda diga basta).", b:"Enseña secuencias, anticipación y causa-efecto, y valida el impulso de explorar deshaciendo, que es aprendizaje legítimo.", v:"Observa si espera al final de la cuenta para tirar: la espera voluntaria es autorregulación naciendo.",
+  ma:"Si eres 'la elegida' para todo consuelo, el halago cansa. Entrena al equipo: que otra persona amorosa asuma una rutina completa fija (el baño de cada noche, el paseo de la mañana) sin que tú intervengas ni supervises. El bebé gana otra base segura y tú ganas un rato tuyo, garantizado y diario." },
+
+/* ===== MES 9 ===== */
+{ s:"Noveno mes: tu bebé quiere el mundo en vertical. Se agarra de la cuna, del sofá o de tus piernas y se impulsa hasta quedar de pie, orgulloso como si hubiera escalado una montaña. Bajar, en cambio, todavía es un misterio que resolverá llorando... o a plomo.",
+  t:"Estación de pararse con premio en la cima", o:"Acompañar sus incorporadas a de pie con seguridad y motivación.", m:"Un mueble bajo, firme y estable (mesa de centro sin esquinas peligrosas) y un juguete nuevo o favorito encima.", c:"Coloca el juguete en el borde visible del mueble y a tu bebé sentado al pie. Deja que trepe solo; tu ayuda es cuidar detrás y enseñarle luego a bajar doblando rodillas con tu guía.", d:"10 a 15 minutos de práctica libre.", b:"Fortalece piernas y confianza, y aprender a bajar controlado previene más golpes que impedirle subir.", v:"Cuenta los segundos que aguanta de pie y observa si ya despega una mano: el equilibrio está afinándose.",
+  ma:"Con un bebé que trepa, tu cuerpo vive en modo guardaespaldas. Reparte la vigilancia: acuerda en casa turnos claros de 'quién mira al bebé ahora', sobre todo en reuniones familiares, donde los accidentes ocurren justamente porque 'todos lo estaban viendo'. Nombrar al responsable de cada rato descansa a todos." },
+
+{ s:"El juego favorito de la semana: aparecer y desaparecer. Tu bebé goza el cucú-tras como nunca, se tapa la cara él mismo y suelta carcajadas anticipadas antes del '¡acá está!'. Detrás de la risa, está dominando la idea más tranquilizadora del año: lo que se va, vuelve.",
+  t:"Cucú-tras de escondites reales", o:"Llevar la permanencia del objeto al nivel experto con su juego favorito.", m:"Una cortina, el marco de una puerta o una manta grande.", c:"Escóndete de verdad tras la cortina dejando asomar un pie o una mano, y pregunta desde ahí '¿dóoonde estoy?'. Deja que sea él quien jale la manta o se asome a encontrarte. Invierte roles si él se tapa.", d:"10 minutos de puro festejo.", b:"Cada reaparición deposita confianza en el banco emocional: la base que suaviza la angustia de separación.", v:"Observa si él inicia el juego tapándose solo: pasó de espectador a director, un salto cognitivo enorme.",
+  ma:"'¿Está comiendo suficiente?' es la pregunta que más ansiedad siembra en esta etapa. Devuélvele el trabajo a quien corresponde: tu pediatra mide, pesa y confirma. Tu trabajo es ofrecer comida sana y compañía amable en la mesa, no contar cucharadas. Suelta la cuenta: la mesa en paz alimenta mejor." },
+
+{ s:"Semana de la pinza fina: pulgar e índice se juntan por fin como pincitas de precisión y tu bebé levanta miguitas, pelusas y todo tesoro microscópico del piso. Es un hito de motricidad enorme... y la señal definitiva de barrer más seguido.",
+  t:"Cosecha de precisión", o:"Estrenar y pulir la pinza fina recién llegada.", m:"Trocitos de comida blanda y segura del tamaño de una uña (según su dieta), sobre bandeja de color liso que contraste.", c:"Coloca pocos trocitos separados entre sí y deja que los coseche uno a uno con sus pincitas. Cuando lo domine, súbele el nivel: trocitos dentro de un vasito de boca ancha.", d:"10 minutos en una merienda.", b:"La pinza fina es la llave de comer solo, pasar páginas, dibujar y vestirse: todo empieza en estas miguitas.", v:"Mira qué mano usa más: puede asomar una preferencia, aunque la lateralidad definitiva tardará años.",
+  ma:"La vigilancia constante de esta etapa gasta una energía invisible que nadie aplaude. Hazla visible: al final del día, en lugar de 'no hice nada hoy', prueba decir 'mantuve a un explorador vivo, alimentado y feliz durante 12 horas'. Dicho así, suena al trabajo enorme que realmente es." },
+
+{ s:"Tu bebé aplaude sus propios logros esta semana y busca tu mirada tras cada hazaña: acaba de descubrir el orgullo. También ama los rituales repetidos: el mismo cuento, la misma canción, el mismo juego, una y mil veces, porque repetir es su manera de dominar.",
+  t:"Chapoteo científico en el baño", o:"Convertir el baño en sesión de experimentos con agua.", m:"Su bañera de siempre, dos vasitos plásticos, un colador o vaso con agujeros y un juguete que flote.", c:"Durante el baño, muéstrale cómo llenar y vaciar los vasitos, cómo la lluvia sale del colador y cómo el juguete flota cuando lo suelta y salpica cuando lo hunde. Deja que repita cada experimento las veces que quiera, narrando: 'se llenó', 'cayó la lluvia', '¡flotó!'.", d:"Los 10 a 15 minutos del baño, con supervisión constante y sin soltarle la atención ni un segundo.", b:"El agua es el material sensorial más completo: enseña volumen, causa-efecto, temperatura y flotación mientras relaja el cuerpo antes de dormir.", v:"Observa cuál experimento repite más veces seguidas: la repetición voluntaria te muestra exactamente qué concepto está masticando su cerebro.",
+  ma:"Esta semana, date el permiso de aburrirte de un juego antes que tu bebé: puedes leer el mismo cuento por décima vez con la mente a medias y sigue contando como presencia amorosa. La mamá presente no es la que disfruta cada repetición: es la que se queda. Y quedarse, algunos días, ya es todo el mérito." },
+
+{ s:"Tu bebé entiende ya órdenes simples acompañadas de gesto: 'dame', 'toma', 'ven'. Cierra el noveno mes convertido en un compañerito que coopera en sus rutinas: estira el brazo para la manga, levanta la cola para el pañal y disfruta ser parte del equipo.",
+  t:"Dame y toma: el primer intercambio", o:"Practicar el intercambio voluntario de objetos, base de la cooperación y el juego compartido.", m:"Un juguete que le guste (no su favorito absoluto, para que soltar sea posible).", c:"Extiende tu mano abierta y pide 'dame' con sonrisa. Cuando lo suelte en tu mano, agradece con fiesta y devuélvelo de inmediato: 'toma'. Repite hasta que el ciclo fluya como juego.", d:"Alrededor de 8 minutos, sin forzar si pierde interés.", b:"Enseña que dar no es perder, inaugura los turnos y fortalece la comprensión de órdenes con gesto.", v:"Observa el momento exacto de soltar: al principio dudará con el puño cerrado. Cuando suelte fácil, la confianza en el intercambio quedó instalada.",
+  ma:"Se acerca el final del primer año y con él, a veces, presiones sobre 'lo que sigue': destete, guardería, cuarto propio, otro bebé. Respira: ninguna de esas decisiones tiene fecha universal. Se toman cuando ustedes estén listos, no cuando el calendario o la familia lo dicten. Tu ritmo es un ritmo válido." },
+];
+
+var SEMANAS_D = [
+/* ===== MES 10 ===== */
+{ s:"Décimo mes: comienza el 'crucero'. Tu bebé camina de lado agarrado de los muebles, viajando del sofá a la mesa como por una baranda infinita. Sus manos, mientras tanto, aprenden tareas de precisión: destapar, encajar, apuntar botones.",
+  t:"Ruta de crucero amueblada", o:"Alargar sus travesías laterales sostenido de los muebles.", m:"Muebles firmes acomodados en línea con pequeños espacios entre sí, y juguetes repartidos a lo largo de la ruta.", c:"Coloca un juguete al inicio, otro a mitad de camino y el mejor al final. Deja pequeños huecos entre muebles para que se anime a cruzarlos sosteniéndose con una sola mano.", d:"15 minutos de expedición.", b:"Cada travesía lateral entrena el equilibrio dinámico y el traspaso de peso que la marcha necesitará.", v:"Observa cómo resuelve los huecos entre muebles: estirarse, soltarse un instante o sentarse y gatear. Su solución te muestra su confianza actual.",
+  ma:"Tu reacción a sus caídas es su termómetro: si tú haces '¡uy, arriba!' con calma, él aprende resiliencia; si ve pánico, aprende miedo. Practicar la cara serena ante los porrazos chiquitos es un regalo de por vida... y también un buen entrenamiento para tus propios sustos de mamá." },
+
+{ s:"Los gestos sociales de tu bebé florecen esta semana: dice adiós con la manita, tira besos, aplaude sus propios logros y quizás levanta los brazos pidiendo 'upa'. Cada gesto es una palabra dicha con el cuerpo, y su repertorio crece a diario.",
+  t:"Diccionario de gestos en familia", o:"Expandir su vocabulario gestual, el idioma puente hacia las palabras.", m:"Las despedidas, saludos y celebraciones reales del día.", c:"Elige tres gestos y úsalos exageradamente en su contexto real toda la semana: 'adiós' en cada despedida, aplausos en cada logro, 'ven' con la mano al llamarlo. Espera siempre unos segundos su imitación.", d:"Integrado al día, sin tiempo extra.", b:"Los gestos con significado predicen y aceleran el lenguaje hablado: cada uno es una palabra en ensayo.", v:"Lleva la cuenta de su diccionario gestual: ¿cuántos gestos usa ya por iniciativa propia, sin que nadie los haga primero?",
+  ma:"Entre gestos y casi-palabras, tu bebé ya se comunica todo el día. Asegúrate de que también reciba tu versión completa: cuéntale cómo estás, qué piensas, qué ves por la ventana. Hablarle de ti no es hablarle de menos: es enseñarle que las personas comparten mundos internos. Y a ti te ordena las ideas." },
+
+{ s:"Tu bebé se convierte esta semana en imitador profesional de tareas domésticas: quiere el trapo si limpias, la cuchara si cocinas, el teléfono si hablas. No busca juguetes que parezcan reales: quiere lo real, porque su trabajo es aprender a ser como tú.",
+  t:"Ayudante de casa edición mini", o:"Canalizar su pasión por imitar tareas reales de la casa.", m:"Versiones seguras de lo real: un trapito limpio, una olla pequeña con cuchara de palo, ropa para 'guardar' en un cajón bajo.", c:"Mientras haces la tarea real, entrégale su versión: 'tú limpia esa mesa', 'mezcla tu sopa'. Nombra lo que hace como trabajo valioso: 'estás cocinando', 'qué bien limpias'.", d:"El tiempo de tus tareas: 10 a 20 minutos.", b:"La imitación de tareas reales desarrolla secuencias, propósito y el orgullo de contribuir: semillas de autonomía.", v:"Observa cuántos pasos de la tarea copia: ¿solo revuelve, o también 'prueba' y 'sirve'? Las secuencias largas revelan planificación.",
+  ma:"Los primeros berrinches estrenan también a la mamá que pone límites, y puede removerte: quizás dudas entre parecer 'muy dura' o 'muy blanda'. Un ancla simple: límites firmes con los peligros, flexibilidad con las preferencias, y ternura en el tono siempre. No tienes que elegir entre que te quiera y cuidarlo." },
+
+{ s:"Cierre del décimo mes con equilibrio de gala: tu bebé se suelta de los muebles por instantes y queda de pie solito, tambaleante y triunfal, como midiéndose el traje de caminante. Cada segundo suelto es un ensayo general de los primeros pasos.",
+  t:"Segundos de estatua valiente", o:"Alargar con juego sus momentos de pie sin apoyo.", m:"Un juguete liviano que requiera dos manos (pelota mediana, peluche grande).", c:"Cuando esté de pie agarrado, ofrécele el juguete de dos manos: para tomarlo tendrá que soltarse. Cuenta en voz alta sus segundos de estatua ('¡uno, dos, treees!') y festeja el aterrizaje, sea sentado o de pie.", d:"10 minutos con muchas pausas.", b:"Convierte el soltar en juego y no en susto, sumando segundos de equilibrio autónomo cada día.", v:"Registra su récord de la semana en segundos: verlo subir te regalará una emoción diaria.",
+  ma:"Se acerca el primer cumpleaños y quizás sientas presión por 'la fiesta perfecta'. Recuerda para quién es realmente ese día: el bebé necesita solo su gente y una torta para aplastar; el resto es para los adultos. Elige el festejo que te deje disfrutar en lugar de servir. Una mamá presente vale más que una decoración de revista." },
+
+/* ===== MES 11 ===== */
+{ s:"Mes once: tu bebé señala con el índice todo lo que le interesa, y ese dedito es una pregunta andante: '¿y esto? ¿y aquello?'. Señalar para compartir interés es uno de los hitos sociales más importantes del año: quiere que mires lo que él mira.",
+  t:"Safari de señalar y nombrar", o:"Responder a cada señalamiento convirtiéndolo en lección de vocabulario.", m:"Una caminata por la casa, el barrio o un libro de imágenes grandes.", c:"Sigue su dedito como guía turístico: cada cosa que señale, nómbrala y agrega un dato corto ('¡el bus! Es grande y amarillo'). Luego señala tú algo y nómbralo, alternando turnos de guía.", d:"Un paseo tranquilo de 15 minutos, al ritmo de su dedito.", b:"La atención conjunta (mirar juntos lo mismo) es el terreno donde el vocabulario crece más rápido, confirmado por toda la investigación del lenguaje.", v:"Nota si después de que nombras algo, te mira a los ojos: ese triángulo objeto-tú-él es comunicación social de alto nivel.",
+  ma:"Once meses de maternidad te han cambiado en formas que quizás nadie ha nombrado. Hazlo tú: escribe tres fortalezas que descubriste en ti este año (paciencia que no sabías, intuición, capacidad de funcionar sin dormir). Son tuyas para siempre, y ninguna revisión de desarrollo las mide." },
+
+{ s:"Tu bebé resuelve problemas esta semana como pequeño estratega: usa un objeto para alcanzar otro, rodea obstáculos en vez de chocarlos y recuerda dónde quedó el juguete que perdió ayer. Su mente ya planifica en dos pasos.",
+  t:"Misión rescate del juguete", o:"Ejercitar la resolución de problemas de dos pasos.", m:"Su juguete favorito, una manta pequeña y una caja transparente con tapa fácil.", c:"Reto 1: pon el juguete sobre la manta, lejos de su alcance, con la punta de la manta cerca de él: ¿descubrirá que jalando la manta llega el juguete? Reto 2: mételo en la caja transparente y deja que resuelva la tapa. Ayuda solo con pistas ('¿y si jalas ahí?').", d:"10 a 12 minutos.", b:"Encadenar dos acciones hacia una meta es razonamiento ejecutivo en su primera versión.", v:"Observa su tolerancia a la frustración: ¿insiste, cambia de estrategia, pide ayuda con la mirada? Pedir ayuda también es resolver.",
+  ma:"Si tus noches siguen partidas a estas alturas, que nadie te haga sentir que 'ya debería dormir de corrido': cada familia y cada bebé tienen su curva, y el cansancio acumulado es real. Duerme una siesta esta semana con el bebé sin culpa ni productividad pendiente. Descansar no se gana: se necesita." },
+
+{ s:"Semana de casi-pasos: tu bebé camina empujando una silla, un caminador de arrastre o su propio cochecito, orgulloso de su maquinaria. Suelto, se anima a uno o dos pasos hacia tus brazos antes de lanzarse en aterrizaje de abrazo.",
+  t:"El expreso de empujar", o:"Practicar la marcha con apoyo móvil, el último gran ensayo antes de caminar.", m:"Una caja pesada con libros, una silla firme sobre alfombra o un carrito de arrastre estable (que no ruede demasiado rápido).", c:"Ponlo de pie tras el 'vehículo' con sus manos en el borde y deja que empuje y avance a su ritmo. Camina de espaldas frente a él celebrando cada metro. Regula la velocidad con el peso de la caja.", d:"15 minutos de viaje.", b:"Empujar le da la experiencia de la marcha (pasos alternados, peso adelante) con la seguridad del apoyo: confianza pura en construcción.", v:"Observa sus pasos: ¿alterna bien los pies?, ¿frena solo? Los detalles del empuje anticipan cómo serán sus primeros pasos libres.",
+  ma:"'¿Ya camina?' será LA pregunta de las próximas semanas, y puede volverse una presión gota a gota. Prepárate una respuesta blindada y alegre: 'está en su proceso, y va perfecto'. Repítela idéntica a quien pregunte. Tu bebé no está atrasado por caminar a su ritmo: el rango normal llega hasta los 18 meses.",},
+
+{ s:"Cierre del onceavo mes con un pequeño comunicador integral: combina señalar, gestos, sonidos con intención y quizás una o dos casi-palabras para hacerse entender de maravilla. Cuando le lees, ya pasa páginas y elige favoritos con opinión firme.",
+  t:"Biblioteca a su alcance", o:"Convertir los libros en territorio propio y de libre acceso.", m:"Cuatro o cinco libros de páginas gruesas en una cesta baja a su altura.", c:"Presenta la cesta como territorio suyo: 'tus libros'. Deja que elija uno, llévalo él a tu regazo (o al piso) y lee siguiendo su ritmo, aunque salte páginas o repita la misma tres veces. Termina cuando él cierre el libro o se vaya: sesión exitosa igual.", d:"Lo que él decida: pueden ser 3 o 15 minutos.", b:"Elegir sus propios libros construye identidad lectora y hace de la lectura un placer autónomo, no una tarea de adultos.", v:"Observa sus rituales de lector: ¿tiene libro favorito?, ¿busca una página específica?, ¿'lee' balbuceando solo? Cada ritual es amor por los libros echando raíz.",
+  ma:"A días del primer año, puede aparecer una nostalgia anticipada: 'ya no es un bebito'. Permítete el nudo en la garganta y también la verdad completa: no estás perdiendo un bebé, estás ganando un niño que te elegirá de formas nuevas cada año. Lo mejor no quedó atrás: cambia de forma." },
+
+/* ===== MES 12 ===== */
+{ s:"¡Comienza el mes del primer cumpleaños! Tu bebé puede estrenar sus primeros pasos libres por estos días: dos, tres, cinco pasos tambaleantes con brazos en alto, y de vuelta al piso. Si aún no, tranquila: está en el rango perfecto y cada bebé estrena a su hora.",
+  t:"Puente de brazos a brazos", o:"Invitar (sin presionar) los primeros pasos independientes.", m:"Dos adultos amados sentados en el piso a un metro de distancia, o tú y el sofá como segunda base.", c:"Párenlo junto a una base y llámenlo desde la otra con brazos abiertos y fiesta anticipada. Acorten o alarguen la distancia según su ánimo del día. Si prefiere gatear el trayecto, celebren igual: la invitación queda hecha.", d:"10 a 15 minutos, terminando siempre en éxito (aunque sea de un paso).", b:"El formato brazos-a-brazos asocia caminar con llegar al amor: la mejor motivación conocida.", v:"Cuenta sus pasos seguidos sin tocar el suelo y aplaude el aterrizaje tanto como el despegue: caerse bien también es parte de caminar.",
+  ma:"Semana de preparativos de cumpleaños: antes de comprar nada, define tu presupuesto de energía, no solo de dinero. Elige máximo tres cosas que de verdad te importen (¿la torta? ¿una foto linda? ¿esa gente querida?) y simplifica el resto sin culpa. El estándar es tu disfrute, no las redes." },
+
+{ s:"Las primeras palabras con sentido pueden estrenarse esta semana: 'mamá' y 'papá' con destinatario exacto, o clásicos como 'agua', 'teta', 'no' y el nombre del perro. Cada palabra es la punta de un iceberg: entiende ya unas cincuenta por cada una que dice.",
+  t:"Elección con palabras en la vida real", o:"Provocar lenguaje dándole el poder de elegir.", m:"Las pequeñas decisiones reales del día: dos frutas, dos juguetes, dos cuentos.", c:"Muestra las dos opciones a su alcance visual, nómbralas despacio ('¿banano... o mango?') y espera 5 a 10 segundos completos, aunque el silencio pese. Cualquier respuesta vale: sonido, gesto, mirada sostenida o palabra. Entrega lo elegido nombrándolo otra vez: '¡banano! Elegiste banano.'", d:"En cada oportunidad natural del día.", b:"La espera con opciones reales es la técnica más eficaz para convertir comprensión en habla: le da motivo, tiempo y recompensa inmediata.", v:"Registra sus 'palabras' de esta semana con criterio amplio: 'gua' por agua cuenta completo. La pronunciación perfecta tardará años; la comunicación es ahora.",
+  ma:"Este mes recibirás muchos '¿y ya habla?'. La respuesta que te protege: 'se comunica muchísimo, y palabras vienen en camino'. Y para ti sola: los hitos no son un examen tuyo. Tu bebé no llega tarde a nada por florecer a su ritmo, y tú no eres mejor ni peor mamá por los tiempos de su calendario." },
+
+{ s:"Tu bebé estrena esta semana el juego simbólico en su primera versión: se lleva el teléfono de juguete a la oreja, 'toma' de la taza vacía, 'peina' al peluche. Fingir es un salto mental gigante: su mente ya representa lo que no está pasando.",
+  t:"La merienda de los peluches", o:"Estrenar el juego de imaginación con una escena simple y conocida.", m:"Dos peluches, tacitas o vasitos vacíos y una cuchara de juguete.", c:"Monta la escena: 'el osito tiene hambre'. Dale tú de 'comer' primero con sonidos de festín ('¡mmm, qué rico!') y ofrécele la cuchara para que continúe él. Sigue su guion aunque lo cambie todo: si le da de comer al zapato, el zapato tenía hambre.", d:"10 minutos de teatro.", b:"El juego simbólico es la cuna de la imaginación, la empatía y el lenguaje narrativo: todo empieza dándole sopa invisible a un oso.", v:"Observa si repite la escena solo más tarde en el día: el juego que reaparece es aprendizaje consolidado.",
+  ma:"Entre la fiesta y las visitas, no olvides agendar lo importante: el control pediátrico del primer año de tu bebé y, si puedes, un chequeo médico para ti también. Un año de posparto merece revisión: cuerpo, ánimo, descanso. Tú también cumples un año de esta maratón y tu salud es infraestructura familiar." },
+
+{ s:"Semana de cumpleaños a la vista: tu bebé no entenderá las velitas, pero sí entiende perfectamente la alegría en las caras, los aplausos y la música. Su memoria emocional guardará el tono de la fiesta aunque olvide los detalles: lo que celebras hoy es, sobre todo, para el álbum del corazón familiar.",
+  t:"Ensayo general de la velita", o:"Preparar el momento estrella del cumpleaños para que sea disfrute y no susto.", m:"Un ponqué o muffin de práctica, una velita (sin encender para el ensayo) y su canción de cumpleaños.", c:"Canten el 'cumpleaños feliz' completo aplaudiendo, acérquenle el ponqué con la velita apagada y soplen ustedes teatralmente para que vea el gesto. Déjenlo tocar y probar su ponqué de práctica con las manos, sin apuros ni servilletazos.", d:"10 minutos de fiesta de mentira.", b:"Los bebés disfrutan más lo que reconocen: ensayar la escena convierte el gran día en territorio conocido en lugar de bombardeo sensorial.", v:"Observa qué parte lo emociona más (¿los aplausos?, ¿la canción?) y cuál lo abruma, para ajustar la fiesta real a su medida.",
+  ma:"Si en la fiesta intentas ser fotógrafa, anfitriona, repostera y mamá a la vez, no estarás en ninguna de las fotos ni en el momento. Delega hoy mismo dos roles con nombre propio: alguien que tome fotos, alguien que sirva. Tu único trabajo el día del cumpleaños es estar donde está tu bebé, con las manos y el corazón libres." },
+
+{ s:"¡Semana 52: primer año completo! Mira a ese pequeño que camina o está a punto, dice o casi dice palabras, abraza con intención y tiene humor propio, y recuerda al recién nacido de hace 12 meses. El viaje que hicieron juntos es, sencillamente, extraordinario. Feliz vuelta al sol para los dos.",
+  t:"La cápsula del primer año", o:"Cerrar el año creando un recuerdo tangible para el futuro.", m:"Una caja pequeña, papel y lapicero, una foto de esta semana y tesoros del año (su primer gorrito, la pulsera de la clínica, un juguete tamaño bolsillo).", c:"Escríbanle una carta corta contándole cómo fue este año: qué los hizo reír, qué fue difícil, qué aman de él hoy. Metan todo en la caja, ciérrenla con fecha de apertura (¿sus 15 años?) y guárdenla. Que el bebé 'ayude' metiendo un objeto: su primera firma.", d:"30 minutos que valdrán oro en quince años.", b:"Ritualizar los cierres ayuda a procesarlos, y el futuro les agradecerá esta ventana al año uno.", v:"Observa tu propia emoción al escribir: es la medida real de todo lo que construiste. Ese nudo en la garganta es un año de amor con esfuerzo.",
+  ma:"Cierra el año con un acto de justicia: escríbete a ti misma la carta que mereces. Empieza con 'Este año tú...' y cuenta todo: las noches en vela, lo que aprendiste a hacer con una mano, las veces que pudiste y las que no y seguiste igual. Fírmala. Guárdala con la del bebé. Criaste un año entero a un ser humano: eres, oficialmente, capaz de cualquier cosa. Gracias por cuidarlo tanto. Y feliz primer año a ti también, mamá." },
+];
+
+  var TODAS_SEMANAS = SEMANAS.concat(SEMANAS_B, SEMANAS_C, SEMANAS_D);
+
+  var TRANQUILA = [
+  "si pierde un poco de peso en estos primeros días: es esperado tras el nacimiento y suele recuperarlo hacia la segunda semana.",
+  "con esos sobresaltos de brazos abiertos ante ruidos o movimientos: es el reflejo de moro, un mecanismo protector que desaparece solo entre los 3 y 6 meses.",
+  "si su piel se descama o le salen granitos en la cara (acné del lactante): se resuelven solos en unas semanas, sin cremas ni tratamientos.",
+  "si al final del día llora sin causa aparente aunque ya comió y está limpio: la descarga vespertina no es hambre ni dolor ni un error tuyo.",
+  "si aún no sonríe 'de verdad': la sonrisa social puede estrenarse en cualquier punto entre las 4 y las 10 semanas, y todas esas fechas son puntuales.",
+  "si a ratos sus ojitos se cruzan o desalinean por segundos: la coordinación ocular está madurando y estos episodios breves son normales hasta los 4-6 meses.",
+  "si aparecen costritas amarillentas en su cuero cabelludo (costra láctea): no pican, no molestan y se van solas o con aceite y cepillado suave.",
+  "si devuelve un poco de leche después de las tomas: el reflujo del lactante es madurativo y, con buen ánimo y buen peso, se resuelve solo con los meses.",
+  "si su popó cambia de color entre amarillo, mostaza o verdoso de un día a otro: en bebés alimentados con leche, esa variación es parte del repertorio normal.",
+  "si sus siestas duran apenas 30 o 40 minutos: son ciclos completos de sueño de bebé, no siestas fallidas ni una mala señal.",
+  "si se queda hipnotizado mirando lámparas, ventanas o el ventilador: los contrastes de luz son gimnasia visual espontánea, no una rareza.",
+  "si babea muchísimo sin que aparezca ningún diente: la saliva madura meses antes que la dentadura, y el primer diente puede llegar hasta el año sin problema.",
+  "si de pronto suelta el pecho o el biberón a cada rato para mirar alrededor: comer dejó de ser su único interés, no te está rechazando ni comiendo mal.",
+  "si notas su cabecita un poco aplanada de un lado: alternar posiciones y aumentar el tiempo boca abajo suele corregirlo; coméntalo sin susto en su próximo control.",
+  "si todavía no gira sobre sí mismo: el rango del volteo va de los 3 a los 7 meses, y practicar sin lograrlo también es avanzar.",
+  "si sus chillidos agudos parecen gritos de auxilio pero vienen con sonrisa: está probando el volumen de su voz, no expresando dolor.",
+  "si aún no suelta carcajadas: algunos bebés ríen a los 3 meses y otros cerca de los 6, y la fecha no mide su felicidad ni su vínculo contigo.",
+  "si muerde y chupa todo con desesperación sin que salga diente alguno: la exploración oral es su método de estudio, no siempre una dentición inminente.",
+  "si justo cuando practica una habilidad nueva empeora su sueño: los picos de aprendizaje agitan las noches y se calman cuando la destreza se asienta.",
+  "si todavía no se sostiene sentado: la ventana normal llega hasta los 9 meses, y los músculos se construyen en el piso, no con prisa.",
+  "si cumple 5 meses sin un solo diente a la vista: la mitad de los bebés estrena dentadura después de los 6 meses, y algunos cerca del año.",
+  "si hace arcadas ruidosas al probar la comida: ese reflejo aparatoso es un mecanismo de protección que expulsa lo que aún no sabe manejar; el atragantamiento real, en cambio, es silencioso.",
+  "si escupe o rechaza un alimento nuevo: un bebé puede necesitar que le presenten un sabor de 10 a 15 veces antes de aceptarlo, y cada rechazo cuenta como presentación.",
+  "si llora cuando sales de la habitación aunque sea un minuto: su memoria mejoró antes que su noción del tiempo, y esa protesta es apego sano, no dependencia excesiva.",
+  "si de repente llora con los abuelos que antes aceptaba feliz: la cautela con caras menos frecuentes es un avance de memoria, no un retroceso de cariño.",
+  "si se ladea y cae de lado cuando practica estar sentado: esas caídas cortas sobre superficie blanda son el entrenamiento oficial del equilibrio.",
+  "si repta hacia atrás y se aleja de lo que quiere alcanzar: los brazos se fortalecen antes que la coordinación, y la reversa es una etapa clásica del gateo.",
+  "si despierta de madrugada llorando con más intensidad que antes: los días de aprendizaje intenso se procesan de noche, y no indica dolor ni retroceso tuyo.",
+  "si te muerde al final de alguna toma ahora que tiene dientes: es curiosidad y encías inflamadas, no agresión, y con un límite calmado desaparece en días.",
+  "si no gatea todavía, o si parece que nunca va a hacerlo: hay bebés perfectamente sanos que se saltan el gateo y pasan directo a pararse.",
+  "si atraviesa días 'pegajosos' en los que solo quiere tus brazos: las fases de apego intenso suelen anteceder a los saltos de independencia, no lo contrario.",
+  "si entiende todo pero no dice ni una palabra: la comprensión va meses por delante del habla, y ese silencio es almacenamiento, no atraso.",
+  "si tira absolutamente todo al piso una y otra vez: no es desafío ni malacrianza, es su primer laboratorio de física, y la etapa se agota sola.",
+  "si atraviesa una racha de preferir marcadamente a una sola persona para consolarse: en épocas sensibles el bebé concentra su base segura, y el círculo se reabre solo.",
+  "si se para en la cuna a medianoche y llora porque no sabe bajar: quedó 'atrapado' por la emoción de su logro nuevo; practicar el descenso de día lo resuelve en pocos días.",
+  "si come visiblemente menos que hace unos meses: su crecimiento se desaceleró a propósito y su apetito se ajustó con precisión; la báscula del control lo confirmará.",
+  "si llora a gritos con el lavado de cabeza o el corte de uñas aunque adore el resto del baño: algunas sensaciones intensas desbordan todavía su tolerancia, y esta sube sola con los meses.",
+  "si sacude la cabeza como diciendo 'no' hasta a lo que quiere: descubrió el gesto y lo ensaya como juego motor, no como oposición real.",
+  "si prefiere gatear a toda velocidad en lugar de practicar sus pasos: elegir la herramienta más eficiente es inteligencia práctica, no pereza motora.",
+  "si se cae de cola decenas de veces al día: el pañal y sus proporciones amortiguan justo esa caída, que es parte del método de aprendizaje del equilibrio.",
+  "si llama 'mamá' a la abuela, al perro o al televisor: dominar el sonido llega antes que afinar el destinatario, y la exclusividad se instala sola.",
+  "si estrena berrinches cuando le retiras algo peligroso: su memoria ya no se distrae fácil y su frustración es genuina; es desarrollo emocional, no mal carácter.",
+  "si aún no se sostiene de pie sin apoyo: cada bebé suelta las manos cuando su equilibrio interno da el visto bueno, y ese examen no se puede adelantar.",
+  "si su 'conversación' es una jerga melodiosa que nadie descifra: ese idioma propio con entonación real es el ensayo general del habla, no un desvío.",
+  "si en plena semana de logros motores despierta de madrugada fresco y con ganas de jugar: su cerebro practica hasta dormido, y la racha pasa cuando la novedad se asienta.",
+  "si camina en puntitas por momentos cuando lo llevas de las manos: experimentar apoyos es parte del ensayo; solo sería tema de control si persistiera constante ya caminando solo.",
+  "si duerme abrazado a la misma mantita o peluche cada noche: los objetos de apego son una herramienta sana de calma, no una dependencia que debas cortar.",
+  "si su primer cumpleaños llega sin primeros pasos: el rango normal para caminar se extiende hasta los 18 meses, y la fecha del estreno no predice nada de su futuro.",
+  "si sus 'palabras' son aproximaciones que solo tú entiendes ('gua' por agua): en lenguaje infantil, la intención comunicativa cuenta completo; la pronunciación tardará años y está bien.",
+  "si tiene 'mamitis' aguda justo ahora que es más independiente: alejarse explorando gasta seguridad, y volver a ti es recargarla; ambas cosas crecen juntas.",
+  "si en su propia fiesta llora, se abruma o solo quiere brazos: el ruido y la gente juntos son mucho para cualquier bebé, y no arruina ningún recuerdo.",
+  "si cierra su primer año sin caminar, sin palabras claras, tomando leche de noche o durmiendo acompañado: a los doce meses, el abanico de lo normal es enorme, y el control pediátrico es el único filtro que necesita.",
+  ];
+
+  var PROXIMA = [
+  "su oído se afinará aún más y tu cara se convertirá en su espectáculo favorito.",
+  "puede llegar su primer brote de crecimiento: te contamos cómo reconocerlo para que no dudes de ti.",
+  "cumple su primer mes y te preparamos para la famosa 'hora bruja' de las tardes.",
+  "llegan (o se afianzan) las primeras sonrisas que son solo para ti.",
+  "descubrirá un juguete que lleva puesto: sus propias manos.",
+  "su cuello dará un salto de fuerza y estrenará vista panorámica boca abajo.",
+  "descubrirá que sus patadas pueden mover el mundo (bueno, al menos un móvil casero).",
+  "empieza el tercer mes: manos al centro del escenario y sueño empezando a ordenarse.",
+  "su voz estrenará volumen y matices: se vienen los primeros chillidos de pura alegría.",
+  "su ojo y su mano firmarán sociedad: comienzan los alcances con puntería.",
+  "puede estrenarse el mejor sonido de todo el año: su primera carcajada.",
+  "cerrarán el primer trimestre y te mostraremos por qué ya es otro bebé.",
+  "arranca el cuarto mes con misión oficial: conquistar el giro completo.",
+  "todo lo que agarre lo sacudirá: llega la era dorada del sonajero.",
+  "sus piernas descubrirán el resorte que llevan dentro.",
+  "jugarán al primer gran misterio de su vida: ¿dónde quedó lo que se tapó?",
+  "empieza el quinto mes y su boca se gradúa como laboratorio central de exploración.",
+  "sus dos manos aprenderán a trabajar en equipo pasándose tesoros.",
+  "su personalidad pedirá micrófono: juguetes favoritos, gustos y opiniones muy claras.",
+  "entrenará como superhéroe: brazos y piernas al aire en pleno 'avioncito'.",
+  "¡medio año! Puede llegar la primera cucharada de comida de su vida.",
+  "sus balbuceos empezarán a sonar a idioma de verdad: 'ba-ba', 'ma-ma'.",
+  "puede voltear al escuchar su nombre: uno de los momentos más emocionantes del año.",
+  "inaugurará su experimento favorito: tirarlo todo al piso, con método científico incluido.",
+  "aprenderá a leer tu cara para decidir en quién confiar.",
+  "el piso se convertirá en su reino: comienzan los grandes desplazamientos.",
+  "jugarán su primer 'juego de mesa': el escondite bajo las tazas.",
+  "puede estrenar aplausos… y descubrir que sus logros tienen público.",
+  "sus deditos ensayarán la pesca de precisión en la bandeja de comer.",
+  "se mecerá en cuatro puntos: el gateo está cargando combustible.",
+  "su dedito índice saldrá de expedición oficial: agujeros, ranuras y botones.",
+  "te sorprenderá cuánto entiende: las palabras cotidianas ya le suenan conocidas.",
+  "estrenará su rol favorito de la temporada: demoledor profesional de torres.",
+  "querrá el mundo en vertical: llegan las primeras puestas de pie.",
+  "el cucú-tras alcanzará nivel experto, con carcajada garantizada.",
+  "pulgar e índice debutarán como pincitas de relojero.",
+  "el baño se convertirá en su laboratorio de chapoteo favorito.",
+  "aprenderá el arte del intercambio: dame, toma… y confianza.",
+  "zarpará el 'crucero': travesías laterales sostenido de todos los muebles.",
+  "sus manitas empezarán a hablar: adiós, besos volados y aplausos con destinatario.",
+  "pedirá su puesto como ayudante oficial de la casa.",
+  "puede soltarse por segunditos y quedar de pie solo: la estatua más valiente del mundo.",
+  "su dedito se volverá una pregunta andante: señalará todo para compartirlo contigo.",
+  "resolverá sus primeras misiones de dos pasos, como pequeño estratega.",
+  "empujará su propio 'vehículo': el último gran ensayo antes de caminar.",
+  "estrenará biblioteca propia y quizás un compañero inseparable para dormir.",
+  "entra al mes del gran estreno: los primeros pasos pueden llegar cualquier día.",
+  "sus primeras palabras con destinatario exacto están a punto de salir al aire.",
+  "descubrirá la magia de fingir: sopa invisible para osos con hambre.",
+  "ensayarán la velita: el cumpleaños se prepara jugando.",
+  "cierran el círculo: la semana 52 trae la cápsula de recuerdos del primer año.",
+  "Completaron juntas las 52 semanas. Este espacio queda aquí, como recuerdo del año que construyeron ustedes dos. 💛",
+  ];
+
+  var SABIAS = [
+  /* Mes 1 (semanas 1-4) */
+  "Tu bebé reconoce tu voz desde antes de nacer: su oído funciona desde la semana 25 de embarazo, y los estudios muestran que los recién nacidos prefieren la voz de su madre sobre cualquier otra voz del mundo. Cuando le hablas y se calma, no es casualidad: es memoria.",
+  "La visión de tu bebé alcanza con nitidez solo entre 20 y 30 centímetros… que es exactamente la distancia entre su cara y la tuya cuando lo alimentas. No es una limitación: es un diseño perfecto para que lo primero que aprenda a ver bien sea a ti.",
+  "El estómago de un recién nacido pasa de ser del tamaño de una cereza en su primer día a el de un huevo hacia la segunda semana. Por eso come tan seguido: no es que tu leche no llene, es que su 'tanque' es diminuto y crece día a día.",
+  "A pocos días de nacer, tu bebé ya distingue el olor de tu leche frente a la de cualquier otra madre, y gira la cabeza hacia él. El olfato es su sentido más maduro al nacer y tu olor es, literalmente, su definición de hogar.",
+  /* Mes 2 (semanas 5-8) */
+  "Cuando tu bebé te sonríe, tu cerebro libera dopamina en los mismos circuitos de recompensa que se estudian en neurociencia con escáneres: su sonrisa te 'recarga' de verdad, químicamente. La naturaleza diseñó ese intercambio para sostenerte en las semanas duras.",
+  "A esta edad, tu bebé puede distinguir sonidos de todos los idiomas del planeta, incluso diferencias que los adultos ya no percibimos. Nacen 'ciudadanos del mundo' del lenguaje, y en los próximos meses se irán especializando en el idioma que escuchan en casa: el tuyo.",
+  "El llanto de los bebés alcanza su punto máximo entre las semanas 6 y 8 de vida en todas las culturas estudiadas, con curvas casi idénticas en todo el mundo. Si estas semanas se sienten más intensas, no es tu bebé ni eres tú: es una etapa universal y con fecha de bajada.",
+  "Durante el contacto piel con piel, el ritmo cardíaco y la temperatura de tu bebé se sincronizan con los tuyos: tu pecho sube su temperatura si él tiene frío y la baja si tiene calor. Tu cuerpo es una incubadora inteligente que se autorregula para él.",
+  /* Mes 3 (semanas 9-13) */
+  "Esa voz aguda y cantadita que te sale sola al hablarle tiene nombre científico ('maternés') y existe en todos los idiomas del mundo. No es ridícula: los bebés la prefieren, les ayuda a segmentar las palabras y acelera el aprendizaje del lenguaje. Tu instinto sabe lingüística.",
+  "El cerebro de tu bebé está creando hasta un millón de conexiones nuevas por segundo en esta etapa, el ritmo más acelerado de toda la vida humana. Cada mirada, cada caricia y cada palabra tuya es material de construcción de esa arquitectura.",
+  "Existe una zona del cerebro especializada solo en reconocer rostros, y la de tu bebé está en pleno entrenamiento: por eso estudia tu cara como si fuera el mapa más importante del mundo. Lo es: de tu cara aprende emociones, atención y comunicación.",
+  "Cuando tu bebé se chupa las manos no está 'agarrando mañas': está estrenando su primera herramienta de calma autónoma. Autorregularse chupando es una habilidad, y dominarla ahora es un cimiento de su gestión emocional futura.",
+  "Las siestas de tu bebé no son pausas del aprendizaje: son parte de él. Durante el sueño, su cerebro consolida lo practicado despierto; hay estudios donde los bebés que duermen siesta tras aprender algo lo recuerdan mejor que los que no. Dormir es su otra forma de estudiar.",
+  /* Mes 4 (semanas 14-17) */
+  "La 'regresión' del sueño de los 4 meses es en realidad una graduación: su sueño abandona el patrón de recién nacido y adopta para siempre la arquitectura de ciclos de un adulto. Despierta más justamente porque su cerebro maduró. Es incómodo y es progreso, las dos cosas.",
+  "Las carcajadas de tu bebé liberan oxitocina en su cuerpo y en el tuyo a la vez, la misma hormona del vínculo que se libera al abrazar. Un ataque de risa compartido es, bioquímicamente, una sesión de fortalecimiento del apego.",
+  "Ese babeo abundante tiene una función secreta: la saliva contiene enzimas digestivas que su cuerpo está empezando a producir en serie, preparando el sistema digestivo para los sólidos que llegarán en un par de meses. Su cuerpo se entrena por adelantado.",
+  "Girar sobre sí mismo entrena el sistema vestibular de tu bebé, el 'GPS interno' del oído que gestiona equilibrio y orientación. Cada volteo de estas semanas es una calibración de ese sistema, que usará toda la vida para caminar, correr y hasta leer sin marearse.",
+  /* Mes 5 (semanas 18-21) */
+  "La boca de tu bebé tiene más terminaciones nerviosas por milímetro que las yemas de sus dedos: por eso todo lo lleva ahí. Chupar un juguete le da más información sobre forma, textura y material que mirarlo o tocarlo. Su boca es su mejor laboratorio, no una mala costumbre.",
+  "Hacia esta edad tu bebé ya distingue toda la paleta de colores, aunque sigue prefiriendo los contrastes fuertes y el rojo, que fue de los primeros que vio. Sus juguetes 'chillones' favoritos lo son por buenas razones ópticas.",
+  "Pasar un objeto de una mano a la otra parece simple, pero exige que los dos hemisferios de su cerebro se coordinen a través del cuerpo calloso, el gran puente neuronal. Cada trasvase de juguete que ves esta semana es ese puente construyéndose.",
+  "Los sabores de lo que comes pasan al líquido amniótico durante el embarazo y a la leche materna después: tu bebé lleva meses 'probando' tu dieta. Por eso los bebés aceptan mejor los sabores que su madre consumió: su paladar ya tiene memoria familiar.",
+  /* Mes 6 (semanas 22-26) */
+  "Sentarse cambia el cerebro: al liberar las manos y elevar la mirada, los bebés recién sentados disparan su exploración fina y su atención. Los investigadores lo llaman efecto cascada: un logro motor desbloquea avances cognitivos en cadena.",
+  "El balbuceo en sílabas ('ba-ba', 'ma-ma') aparece en todos los idiomas del mundo a edades casi idénticas. Y un dato conmovedor: los bebés sordos expuestos a lengua de señas 'balbucean' con las manos, repitiendo movimientos silábicos. El impulso de lenguaje es universal.",
+  "Con la llegada de los sólidos, la comunidad de bacterias buenas del intestino de tu bebé se diversifica y se entrena, y ese microbioma participa en su inmunidad de por vida. Cada alimento nuevo no solo lo nutre: educa a su sistema de defensa.",
+  "Antes de decidir si algo es seguro, tu bebé te mira la cara y 'lee' tu expresión: se llama referencia social y es su brújula emocional. Tu calma ante un desconocido, un perro o un tropiezo es información oficial para su cerebro.",
+  "Tu bebé ya forma recuerdos que duran semanas: puede reconocer un juguete que no ve hace días o a una persona que visita poco. Su memoria dejó de ser de minutos: ahora vive en una línea de tiempo, contigo como personaje principal.",
+  /* Mes 7 (semanas 27-30) */
+  "El gateo (en cualquiera de sus estilos) obliga a coordinar lados opuestos del cuerpo en patrón cruzado, un ejercicio potente de integración cerebral. Y otro dato tranquilizador avalado por pediatras: hay bebés sanos que nunca gatean y se desarrollan perfecto. Ambas cosas son ciertas.",
+  "El miedo a los desconocidos que estrena tu bebé es, paradójicamente, un certificado de memoria: significa que ya archiva los rostros conocidos con tanta precisión que detecta al instante quién no está en su archivo. No es timidez: es un cerebro clasificando bien.",
+  "Cuando tu bebé y tú miran juntos el mismo objeto mientras lo nombras, ocurre la 'atención conjunta', y es tan poderosa que la cantidad de estos momentos predice el tamaño del vocabulario años después. Mirar juntos es enseñar idioma.",
+  "Tu bebé entenderá alrededor de cincuenta palabras antes de decir la primera. Todo lo que hoy parece 'no responder' es en realidad una descarga silenciosa del idioma completo: comprensión primero, palabras después. Está escuchándotelo todo.",
+  /* Mes 8 (semanas 31-34) */
+  "La angustia de separación es el precio de un logro doble: tu bebé ya te recuerda perfectamente cuando no estás (memoria) pero aún no calcula el tiempo de tu regreso (noción temporal). Llora por amor con memoria. La noción de 'mamá siempre vuelve' se instala con cada reencuentro.",
+  "Contrario a la intuición, los estudios de apego muestran que los bebés cuyas llamadas reciben respuesta sensible se vuelven más independientes y exploradores, no menos. Atenderlo hoy no lo 'malcría': le financia la seguridad con la que se alejará mañana.",
+  "Meter el dedito en cada agujero no es travesura: el dedo índice se está independizando del resto de la mano, un paso obligado hacia señalar, y señalar es la puerta de entrada al lenguaje. Ese dedito explorador está estudiando comunicación.",
+  "Los bebés practican sus nuevas habilidades motoras hasta dormidos: los estudios de sueño muestran activación de las mismas zonas cerebrales del movimiento aprendido de día. Si tu bebé se para en la cuna a medianoche, su cerebro está literalmente ensayando en sueños.",
+  /* Mes 9 (semanas 35-39) */
+  "El cucú-tras es probablemente el juego más practicado de la historia humana, y por buen motivo: en dosis de risa, entrena la lección cognitiva y emocional más importante del año (lo que desaparece, regresa). Cada partida deposita en su memoria la certeza que más lo calmará este año: mamá siempre reaparece.",
+  "La pinza fina que estrena tu bebé (pulgar contra índice) usa los mismos circuitos neuronales que dentro de unos años sostendrán un lápiz para escribir. Las miguitas que hoy cosecha del piso son, en sentido estricto, sus primeras clases de caligrafía.",
+  "Hacia el final del primer año, el crecimiento físico se desacelera a propósito: si tu bebé siguiera creciendo al ritmo del primer semestre, mediría más de metro y medio a los dos años. Que coma 'menos' que antes no es un problema: es el plan de su biología.",
+  "Cuando tu bebé te ofrece un objeto y lo retira entre risas, está experimentando con el concepto de intercambio social: dar, recibir, confiar. Los investigadores ven en estos juegos de 'dame y toma' los cimientos de la cooperación humana. Está practicando ser buena gente.",
+  "El apego a una mantita o peluche tiene nombre técnico (objeto transicional) y es una estrategia sofisticada: tu bebé 'exporta' la calma que siente contigo a un objeto portátil que huele a casa. No es dependencia: es ingeniería emocional de bolsillo.",
+  /* Mes 10 (semanas 40-43) */
+  "Caminar de lado sostenido de los muebles entrena algo invisible: el traspaso de peso de una pierna a otra, el ingrediente secreto de la marcha. Cada 'viaje' por el borde del sofá de esta semana es un ensayo técnico de sus futuros primeros pasos.",
+  "Los gestos no compiten con las palabras: las adelantan. Los estudios muestran que los bebés que más gestos usan (adiós, aplausos, señalar) desarrollan vocabularios más amplios, porque cada gesto ensaya la mecánica mental de 'un símbolo representa una cosa'.",
+  "Tu bebé aprende viéndote hacer cosas reales mucho más que de cualquier juguete educativo: se llama aprendizaje por observación y a esta edad es su método estrella. Cuando 'barre' con su trapito imitándote, está en su mejor escuela.",
+  "Caerse de cola decenas de veces al día es parte del diseño: el pañal y la proporción corporal del bebé amortiguan justo esa caída, y cada una recalibra su equilibrio con información nueva. Los expertos en desarrollo motor lo resumen así: caerse es parte de aprender a no caerse.",
+  /* Mes 11 (semanas 44-47) */
+  "Cuando tu bebé señala algo y luego te mira, está haciendo un triángulo mental sofisticado (objeto-yo-tú) que casi ninguna otra especie logra: quiere que compartas su mente, no solo su vista. Ese dedito es una invitación a pensar juntos, y respondertelo nutre directamente su lenguaje.",
+  "Resolver problemas de dos pasos (jalar la manta para alcanzar el juguete que está encima) marca el estreno del razonamiento por objetivos: su mente ya planifica en cadena. Es la misma arquitectura mental que algún día usará para planear cualquier proyecto.",
+  "Empujar cosas pesadas (la caja, la silla, su carrito) le encanta por una razón sensorial: la resistencia muscular intensa organiza y calma su sistema nervioso, además de darle la experiencia de la marcha con red de seguridad. Es ejercicio y regulación emocional en uno.",
+  "La comprensión de tu bebé va unas diez palabras por delante de cada palabra que dice, y esa brecha es normal durante años. Su 'idioma propio' con melodía de conversación (la jerga) es el ensayo general del habla: respóndele en serio y estarás traduciéndosela.",
+  /* Mes 12 (semanas 48-52) */
+  "El rango normal para caminar va de los 9 a los 18 meses, y la edad del primer paso no predice nada sobre inteligencia ni habilidad deportiva futura: caminar 'temprano' o 'tarde' dentro del rango da exactamente el mismo resultado a largo plazo. El calendario de tu bebé es tan bueno como cualquiera.",
+  "Al cumplir un año, el cerebro de tu bebé ha triplicado su tamaño desde el nacimiento y consume cerca de la mitad de toda su energía diaria: por eso duerme, come y a veces se abruma como si creciera por dentro. Porque exactamente eso está haciendo.",
+  "En experimentos clásicos de psicología del desarrollo, bebés de alrededor de un año ayudan espontáneamente a adultos en apuros (alcanzándoles objetos caídos) sin que nadie se los pida ni los premie. La generosidad aparece antes que las palabras: tu bebé ya la trae puesta.",
+  "Los pies de tu bebé son en gran parte cartílago flexible y su arco se formará durante años: por eso los especialistas recomiendan aprender a caminar descalzo siempre que se pueda. Sentir el suelo con toda la planta es la mejor plantilla ortopédica que existe.",
+  "Un año de conversaciones, cuentos y canciones deja huella medible: los niños a los que se les habló y leyó a diario durante el primer año llegan a la etapa escolar habiendo escuchado millones de palabras más, con ventajas duraderas en vocabulario. Cada charla de este año fue una inversión que ya está rindiendo.",
+  ];
+
+  /* ---------- Estado ---------- */
+  var state = { baby: read(LS.baby, null) };
+
+  function boot() {
+    if (!read(LS.unlocked, false)) showOnly("screen-lock");
+    else if (!state.baby) showOnly("screen-onboarding");
+    else showApp();
+  }
+  function showOnly(id) {
+    $("screen-lock").hidden = id !== "screen-lock";
+    $("screen-onboarding").hidden = id !== "screen-onboarding";
+    $("app").hidden = id !== "app";
+    /* El contenido solo "aparece" cuando la app está desbloqueada de verdad */
+    document.body.classList.toggle("locked", id !== "app");
+  }
+  function showApp() { showOnly("app"); renderAll(); }
+
+  /* ---------- Acceso ---------- */
+  $("btnComenzar").addEventListener("click", function () {
+    $("lockStep1").hidden = true; $("lockStep2").hidden = false; $("passInput").focus();
+  });
+  $("btnVolverLock").addEventListener("click", function () {
+    $("lockStep2").hidden = true; $("lockStep1").hidden = false; $("lockError").hidden = true; $("passInput").value = "";
+  });
+  function tryUnlock() {
+    if ($("passInput").value.trim() === CLAVE_ACCESO) {
+      write(LS.unlocked, true); $("lockError").hidden = true;
+      state.baby ? showApp() : showOnly("screen-onboarding");
+    } else $("lockError").hidden = false;
+  }
+  $("btnDesbloquear").addEventListener("click", tryUnlock);
+  $("passInput").addEventListener("keydown", function (e) { if (e.key === "Enter") tryUnlock(); });
+
+  /* ---------- Primera vez ---------- */
+  $("btnGuardarBebe").addEventListener("click", function () {
+    var name = $("obName").value.trim(), birth = $("obBirth").value;
+    if (!name || !birth || new Date(birth + "T00:00:00") > new Date()) { $("obError").hidden = false; return; }
+    state.baby = { name: name, birthdate: birth };
+    write(LS.baby, state.baby);
+    showApp();
+  });
+
+  /* ---------- Render semanal ---------- */
+  function weekIndex(age) {
+    /* Semana de vida actual (0-51): se desbloquea sola con la edad */
+    var birth = new Date(state.baby.birthdate + "T00:00:00");
+    var now = new Date(); now.setHours(0, 0, 0, 0);
+    var days = Math.max(0, Math.floor((now - birth) / 86400000));
+    return Math.min(Math.floor(days / 7), 51);
+  }
+
+  function renderHero(age, wi) {
+    $("tbName").textContent = "Mi Bebé Hoy";
+    $("tbAge").textContent = state.baby.name + " · " + age.text;
+    var h = new Date().getHours();
+    var saludo = h < 12 ? "¡Buenos días" : h < 19 ? "¡Buenas tardes" : "¡Buenas noches";
+    $("heroGreet").textContent = saludo + ", mamá de " + state.baby.name + "! " + (h < 19 ? "☀️" : "🌙");
+    $("heroSub").textContent = "Hoy " + state.baby.name + " tiene exactamente:";
+    $("heroAge").textContent = age.text;
+    $("heroWeek").textContent = age.months >= 12
+      ? "🎂 Primer año completado"
+      : "Semana " + (wi + 1) + " de su primer año";
+  }
+
+  function renderSemana(wi) {
+    var w = TODAS_SEMANAS[wi];
+    $("semanaText").textContent = w.s;
+    $("actTitle").textContent = w.t;
+    $("actSteps").innerHTML =
+      step(1, "Objetivo", w.o) +
+      step(2, "Materiales", w.m) +
+      step(3, "Cómo hacerla", w.c) +
+      step(4, "Duración", w.d) +
+      step(5, "Beneficios", w.b) +
+      step(6, "Qué observar", w.v);
+    $("mamaText").textContent = w.ma;
+    $("sabiasText").textContent = SABIAS[wi];
+    $("tranqText").textContent = TRANQUILA[wi];
+    if (wi >= 51) {
+      $("proxLabel").textContent = "✨ ";
+      $("proxText").textContent = PROXIMA[51];
+    } else {
+      $("proxLabel").textContent = "✨ La próxima semana:";
+      $("proxText").textContent = " " + PROXIMA[wi];
+    }
+  }
+  function step(n, label, text) {
+    var d = ((n - 1) % 5) + 1;
+    return '<div class="act-step"><span class="act-step-label"><span class="dot d' + d + '">' + n + "</span>" + label + '</span><p>' + esc(text) + "</p></div>";
+  }
+
+
+  /* ---------- Ajustes ---------- */
+  $("btnGear").addEventListener("click", function () {
+    var aj = $("ajustes");
+    aj.hidden = !aj.hidden;
+    if (!aj.hidden) aj.scrollIntoView({ behavior: "smooth" });
+  });
+  $("btnSaveSettings").addEventListener("click", function () {
+    var name = $("setName").value.trim(), birth = $("setBirth").value;
+    if (!name || !birth || new Date(birth + "T00:00:00") > new Date()) return;
+    state.baby = { name: name, birthdate: birth };
+    write(LS.baby, state.baby);
+    $("setOk").hidden = false;
+    setTimeout(function () { $("setOk").hidden = true; }, 1800);
+    renderAll();
+  });
+  $("btnReset").addEventListener("click", function () {
+    if (!confirm("Esto borrará el nombre, la fecha de nacimiento y los recuerdos guardados, y la app volverá a empezar. ¿Continuar?")) return;
+    localStorage.removeItem(LS.baby);
+    localStorage.removeItem(LS.logros);
+    state.baby = null;
+    $("obName").value = "";
+    $("obBirth").value = "";
+    $("ajustes").hidden = true;
+    showOnly("screen-onboarding");
+  });
+
+  /* ---------- Render global ---------- */
+  function renderAll() {
+    if (!state.baby) return;
+    var age = babyAge(state.baby.birthdate);
+    var wi = weekIndex(age);
+    renderHero(age, wi);
+    renderSemana(wi);
+    $("setName").value = state.baby.name;
+    $("setBirth").value = state.baby.birthdate;
+  }
+
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("sw.js").catch(function () {});
+    });
+  }
+
+  boot();
+})();
+  </script>
+</body>
+</html>
